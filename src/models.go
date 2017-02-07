@@ -7,10 +7,10 @@ type GameStartRequest struct {
 }
 
 type GameStartResponse struct {
-	Color   string `json:"color"`
-	HeadUrl string `json:"head_url"`
-	Name    string `json:"name"`
-	Taunt   string `json:"taunt"`
+	Color   string  `json:"color"`
+	HeadUrl *string `json:"head_url,omitempty"`
+	Name    string  `json:"name"`
+	Taunt   *string `json:"taunt,omitempty"`
 }
 
 type MoveRequest struct {
@@ -25,11 +25,13 @@ type MoveRequest struct {
 }
 
 type MoveResponse struct {
+	Move  string  `json:"move"`
+	Taunt *string `json:"taunt,omitempty"`
 }
 
 type BoardCell struct {
-	State string `json:"state"`
-	Snake string `json:"snake"`
+	State string  `json:"state"`
+	Snake *string `json:"snake,omitempty"`
 }
 
 type Point struct {
@@ -38,4 +40,9 @@ type Point struct {
 }
 
 type Snake struct {
+	Coords       []Point `json:"coords"`
+	HealthPoints int     `json:"health_points"`
+	Id           string  `json:"id"`
+	Name         string  `json:"name"`
+	Taunt        string  `json:"taunt"`
 }

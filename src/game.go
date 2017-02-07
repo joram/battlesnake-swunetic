@@ -1,14 +1,14 @@
 package main
 
 type Game struct {
-	snakes []HeuristicSnake
-	moveCount int
+	snakes       []HeuristicSnake
+	moveCount    int
 	currentBoard MoveRequest
-	state string
-	winners []HeuristicSnake
+	state        string
+	winners      []HeuristicSnake
 }
 
-func NewGame (weights [][]int) Game {
+func NewGame(weights [][]int) Game {
 	snakes := []HeuristicSnake{}
 	for _, weights := range weights {
 		snakes = append(snakes, NewHeuristicSnake(weights))
@@ -16,11 +16,11 @@ func NewGame (weights [][]int) Game {
 
 	startingBoard := MoveRequest{} // TODO: populate
 
-	return Game {
-		snakes: snakes,
-		moveCount: 0,
+	return Game{
+		snakes:       snakes,
+		moveCount:    0,
 		currentBoard: startingBoard,
-		winners: []HeuristicSnake{},
+		winners:      []HeuristicSnake{},
 	}
 }
 
@@ -43,7 +43,7 @@ func (game *Game) Run() []HeuristicSnake {
 	return game.winners
 }
 
-func (game *Game) Tick(){
+func (game *Game) Tick() {
 	board := game.currentBoard
 	for _, snake := range game.snakes {
 		direction := snake.Move(&board)
@@ -60,4 +60,3 @@ func (game *Game) MakeMove(snake *HeuristicSnake, direction string) {
 	//	- win state=win
 	//	- draw state=draw
 }
-

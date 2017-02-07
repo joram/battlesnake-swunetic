@@ -6,14 +6,13 @@ import (
 
 type MoveHeuristic func(request *MoveRequest) string
 
-
 type WeightedHeuristic struct {
-	weight int
-	move string
+	weight        int
+	move          string
 	moveHeuristic MoveHeuristic
 }
 
-func (weightedHeuristic *WeightedHeuristic) Calculate(request *MoveRequest){
+func (weightedHeuristic *WeightedHeuristic) Calculate(request *MoveRequest) {
 	// TODO
 }
 
@@ -26,18 +25,17 @@ func NewHeuristicSnake(weights []int) HeuristicSnake {
 		weightedHeuristics: []WeightedHeuristic{},
 	}
 
-        heuristics := []MoveHeuristic{
+	heuristics := []MoveHeuristic{
 	//	 this is where we list all heuristics we've written
 	}
 	for i, weight := range weights {
 		snake.weightedHeuristics = append(snake.weightedHeuristics, WeightedHeuristic{
-			weight:weight,
-			moveHeuristic:heuristics[i],
+			weight:        weight,
+			moveHeuristic: heuristics[i],
 		})
 	}
 	return snake
 }
-
 
 func (snake *HeuristicSnake) Move(request *MoveRequest) string {
 	var heuristicWaitGroup sync.WaitGroup
@@ -45,7 +43,7 @@ func (snake *HeuristicSnake) Move(request *MoveRequest) string {
 
 	// do heuristics
 	for _, weightedHeuristic := range snake.weightedHeuristics {
-		go func(h *WeightedHeuristic){
+		go func(h *WeightedHeuristic) {
 			h.Calculate(request)
 			heuristicWaitGroup.Done()
 		}(&weightedHeuristic)
@@ -72,5 +70,5 @@ func (snake *HeuristicSnake) Move(request *MoveRequest) string {
 		}
 	}
 
-	return  bestDirection
+	return bestDirection
 }
