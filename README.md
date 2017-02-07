@@ -10,6 +10,9 @@ This will, given a list of heuristics, run games with snakes of various weights 
 Given 100 sample games run with a set of snakes, a set of new snakes will be generated based on the winner(s) of the 100 games.
 A certain amount of random varience will be introduced as well. This second generation of snakes, in theory, should be better than the first set of snakes.
 
+## Heuristics
+These are the core of this logic, the better the heuristics the better the snake can be. A heuristic is just a simple function that takes a game board and returns a direction.
+
 ## Repetition
 Iterating on these snakes should give us better and better snake... profit?
 
