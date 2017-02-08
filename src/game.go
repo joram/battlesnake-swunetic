@@ -1,25 +1,28 @@
 package main
 
+import "fmt"
+
 type Game struct {
 	snakes       []HeuristicSnake
 	moveCount    int
-	currentBoard MoveRequest
+	currentBoard [][]BoardCell
 	state        string
 	winners      []HeuristicSnake
 }
 
-func NewGame(weights [][]int) Game {
-	snakes := []HeuristicSnake{}
+func NewGame(numberOfSnakes int, weights [][]int) Game {
+	// when creating a new game, we need to start up a certain number of snakes, each one
+	// needs slightly different weights to decide which one is better and try and work
+	// towards optimal weighting.
+	snakes := [numberOfSnakes]HeuristicSnake{}
 	for _, weights := range weights {
 		snakes = append(snakes, NewHeuristicSnake(weights))
 	}
 
-	startingBoard := MoveRequest{} // TODO: populate
-
 	return Game{
 		snakes:       snakes,
 		moveCount:    0,
-		currentBoard: startingBoard,
+		currentBoard: [20][20]BoardCell{},
 		winners:      []HeuristicSnake{},
 	}
 }
@@ -29,13 +32,13 @@ func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Tick()
 		if game.state != "running" {
-			println("game ended: %v on move %v", game.state, game.moveCount)
+			fmt.Printf("game ended: %v on move %v\n", game.state, game.moveCount)
 			for _, snake := range game.snakes {
 				weights := []int{}
 				for _, w := range snake.weightedHeuristics {
 					weights = append(weights, w.weight)
 				}
-				println("winner: %v", weights)
+				fmt.Printf("winner: %v\n", weights)
 			}
 			break
 		}
