@@ -14,14 +14,13 @@ type GameStartResponse struct {
 }
 
 type MoveRequest struct {
-	Board  [][]BoardCell `json:"board"`
-	Food   []Point       `json:"food"`
-	GameId string        `json:"game_id"`
-	Height int           `json:"height"`
-	Width  int           `json:"width"`
-	Turn   int           `json:"turn"`
-	Snakes []Snake       `json:"snakes"`
-	You    string        `json:"you"`
+	Food   []Point `json:"food"`
+	GameId string  `json:"game_id"`
+	Height int     `json:"height"`
+	Width  int     `json:"width"`
+	Turn   int     `json:"turn"`
+	Snakes []Snake `json:"snakes"`
+	You    string  `json:"you"`
 }
 
 type MoveResponse struct {

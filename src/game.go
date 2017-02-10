@@ -10,21 +10,35 @@ type Game struct {
 	winners      []HeuristicSnake
 }
 
-func NewGame(numberOfSnakes int, weights [][]int) Game {
+func NewGame(numberOfSnakes int) Game {
 	// when creating a new game, we need to start up a certain number of snakes, each one
 	// needs slightly different weights to decide which one is better and try and work
 	// towards optimal weighting.
-	snakes := [numberOfSnakes]HeuristicSnake{}
-	for _, weights := range weights {
-		snakes = append(snakes, NewHeuristicSnake(weights))
+	snakes := []HeuristicSnake{}
+	for i := 0; i < numberOfSnakes; i++ {
+		snake := NewHeuristicSnake([]int{})
+		snakes = append(snakes, snake)
 	}
 
 	return Game{
 		snakes:       snakes,
 		moveCount:    0,
-		currentBoard: [20][20]BoardCell{},
+		currentBoard: generateInitialBoard(20, 20),
 		winners:      []HeuristicSnake{},
 	}
+}
+
+func generateInitialBoard(width int, height int) [][]BoardCell {
+	board := [][]BoardCell{}
+	for y := 0; y < width; y++ {
+		row := []BoardCell{}
+		for x := 0; x < height; x++ {
+			cell := BoardCell{}
+			row = append(row, cell)
+		}
+		board = append(board, row)
+	}
+	return board
 }
 
 func (game *Game) Run() []HeuristicSnake {
@@ -47,12 +61,16 @@ func (game *Game) Run() []HeuristicSnake {
 }
 
 func (game *Game) Tick() {
-	board := game.currentBoard
 	for _, snake := range game.snakes {
-		direction := snake.Move(&board)
+		direction := snake.Move(game.buildMoveRequest())
 		game.MakeMove(&snake, direction)
 	}
 	game.moveCount += 1
+}
+
+func (game *Game) buildMoveRequest() *MoveRequest {
+	request := MoveRequest{}
+	return &request
 }
 
 func (game *Game) MakeMove(snake *HeuristicSnake, direction string) {

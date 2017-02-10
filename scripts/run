@@ -5,4 +5,4 @@ swu build || exit 1
 
 docker run -p 9000:9000 --rm --network="sendwithus.local" --env-file scripts/.env \
     -v "$PWD"/src:/go/src/github.com/sendwithus/battlesnake-swunetic -v "$PWD"/bin:/go/bin -v "$PWD"/pkg:/go/pkg \
-    -w /go/src/github.com/sendwithus/battlesnake-swunetic golang:1.7-alpine /go/bin/battlesnake-swunetic
+    -w /go/src/github.com/sendwithus/battlesnake-swunetic golang:1.7-alpine /go/bin/battlesnake-swunetic $@
