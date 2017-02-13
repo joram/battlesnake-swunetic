@@ -17,6 +17,7 @@ func (weightedHeuristic *WeightedHeuristic) Calculate(request *MoveRequest) {
 }
 
 type HeuristicSnake struct {
+	id string
 	weightedHeuristics []WeightedHeuristic
 }
 

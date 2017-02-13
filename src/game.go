@@ -5,7 +5,7 @@ import "fmt"
 type Game struct {
 	snakes       []HeuristicSnake
 	moveCount    int
-	currentBoard [][]BoardCell
+	currentBoard MoveRequest
 	state        string
 	winners      []HeuristicSnake
 }
@@ -28,16 +28,8 @@ func NewGame(numberOfSnakes int) Game {
 	}
 }
 
-func generateInitialBoard(width int, height int) [][]BoardCell {
-	board := [][]BoardCell{}
-	for y := 0; y < width; y++ {
-		row := []BoardCell{}
-		for x := 0; x < height; x++ {
-			cell := BoardCell{}
-			row = append(row, cell)
-		}
-		board = append(board, row)
-	}
+func generateInitialBoard(width int, height int) MoveRequest {
+	board := MoveRequest{}
 	return board
 }
 
@@ -61,23 +53,37 @@ func (game *Game) Run() []HeuristicSnake {
 }
 
 func (game *Game) Tick() {
+
+	// get all moves
+	moveDirections := map[string]string{}
 	for _, snake := range game.snakes {
-		direction := snake.Move(game.buildMoveRequest())
-		game.MakeMove(&snake, direction)
+		moveDirections[snake.id] = snake.Move(game.buildMoveRequest())
 	}
+
+	// extend all snakes
+	newHeads := map[string]Point{}
+	for _, heuristicSnake := range game.snakes {
+		snake := game.currentBoard.GetSnake(heuristicSnake.id)
+		direction := moveDirections[snake.Id]
+		newHeads[snake.Id] = snake.Extend(direction)
+	}
+
+	// eat or shrink
+
+
+	// collision
+	for snakeId, newHead := range newHeads {
+		if game.currentBoard.IsSolid(newHead) {
+			game.currentBoard.KillSnake(snakeId)
+		}
+	}
+
+	// check win/draw states
+
 	game.moveCount += 1
 }
 
 func (game *Game) buildMoveRequest() *MoveRequest {
 	request := MoveRequest{}
 	return &request
-}
-
-func (game *Game) MakeMove(snake *HeuristicSnake, direction string) {
-	// TODO: update game.currentBoard based on direction
-	// Possible side effects:
-	//	- sensible move, board's updated
-	//	- death
-	//	- win state=win
-	//	- draw state=draw
 }
