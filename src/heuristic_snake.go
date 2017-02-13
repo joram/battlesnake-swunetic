@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/garyburd/redigo/redis"
+	"math/rand"
 	"sync"
 )
 
@@ -13,28 +15,42 @@ type WeightedHeuristic struct {
 }
 
 func (weightedHeuristic *WeightedHeuristic) Calculate(request *MoveRequest) {
-	// TODO
+	weightedHeuristic.move = weightedHeuristic.moveHeuristic(request)
 }
 
 type HeuristicSnake struct {
 	weightedHeuristics []WeightedHeuristic
 }
 
-func NewHeuristicSnake(weights []int) HeuristicSnake {
+func NewHeuristicSnake() HeuristicSnake {
 	snake := HeuristicSnake{
 		weightedHeuristics: []WeightedHeuristic{},
 	}
 
-	heuristics := []MoveHeuristic{
+	heuristics := map[string]MoveHeuristic{
 	//	 this is where we list all heuristics we've written
 	}
-	for i, weight := range weights {
+	for name, heuristic := range heuristics {
 		snake.weightedHeuristics = append(snake.weightedHeuristics, WeightedHeuristic{
-			weight:        weight,
-			moveHeuristic: heuristics[i],
+			weight:        getWeight(name),
+			moveHeuristic: heuristic,
 		})
 	}
 	return snake
+}
+
+func getWeight(name string) int {
+	c, err := redis.Dial("tcp", "sendwithus.local.web-app.redis:6379") // TODO: update to redis on heroku
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	weight, err := redis.Int(c.Do("GET", name))
+	if err != nil || weight == 0 {
+		weight = rand.Intn(50) // figure out a good starting weight for a new heuristic
+	}
+	return weight
 }
 
 func (snake *HeuristicSnake) Move(request *MoveRequest) string {
