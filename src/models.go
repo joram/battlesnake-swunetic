@@ -28,6 +28,30 @@ type MoveResponse struct {
 	Taunt *string `json:"taunt,omitempty"`
 }
 
+type GameState struct {
+	HeuristicSnakes []HeuristicSnake
+	Snakes          []Snake `json:"snakes"`
+	Height          int     `json:"height"`
+	Width           int     `json:"width"`
+	Turn            int     `json:"turn"`
+	Food            []Point `json:"food"`
+	state           string
+	winners         []HeuristicSnake
+}
+
+type MoveHeuristic func(gameState *GameState) string
+
+type WeightedHeuristic struct {
+	weight        int
+	move          string
+	moveHeuristic MoveHeuristic
+}
+
+type HeuristicSnake struct {
+	Id string
+	WeightedHeuristics []WeightedHeuristic
+}
+
 type BoardCell struct {
 	State string  `json:"state"`
 	Snake *string `json:"snake,omitempty"`
