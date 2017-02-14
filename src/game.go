@@ -49,10 +49,22 @@ func (game *Game) Run() []HeuristicSnake {
 
 func (game *Game) Print() {
 	fmt.Printf("game is %v on turn %v\n", game.currentGameState.state, game.currentGameState.Turn)
-	for _, snake := range game.currentGameState.HeuristicSnakes {
-		println("winner snake had the weights:")
-		for _, w := range snake.WeightedHeuristics {
-			fmt.Printf("%v: %v", w.Name, w.weight)
+	if game.currentGameState.state != "running" {
+		for _, snake := range game.currentGameState.winners {
+			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
+			for _, w := range snake.WeightedHeuristics {
+				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.weight)
+			}
+			println(winnerDetails)
 		}
+
+		for _, snake := range game.currentGameState.losers {
+			winnerDetails := fmt.Sprintf("LOSER[%v] %v:\t", snake.DiedOnTurn, snake.Id)
+			for _, w := range snake.WeightedHeuristics {
+				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.weight)
+			}
+			println(winnerDetails)
+		}
+
 	}
 }
