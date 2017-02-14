@@ -57,18 +57,18 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 
 	// calc weights of moves
 	weights := map[string]int{
-		"u": 0,
-		"d": 0,
-		"l": 0,
-		"r": 0,
+		UP:    0,
+		DOWN:  0,
+		LEFT:  0,
+		RIGHT: 0,
 	}
 	for _, weightedHeuristic := range snake.WeightedHeuristics {
 		weights[weightedHeuristic.move] += weightedHeuristic.weight
 	}
 
 	// pick heaviest weighted move
-	bestDirection := "u"
-	bestWeight := weights["u"]
+	bestDirection := UP
+	bestWeight := weights[UP]
 	for direction, weight := range weights {
 		if weight > bestWeight {
 			bestDirection = direction

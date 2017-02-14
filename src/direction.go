@@ -2,10 +2,10 @@ package main
 
 import "fmt"
 
-const UP = "u"
-const DOWN = "d"
-const LEFT = "l"
-const RIGHT = "r"
+const UP = "up"
+const DOWN = "down"
+const LEFT = "left"
+const RIGHT = "right"
 
 func directionVector(direction string) Point {
 	if direction == UP {

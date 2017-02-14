@@ -14,6 +14,8 @@ func start(w http.ResponseWriter, r *http.Request) {
 	if r.TLS != nil {
 		scheme = "https"
 	}
+
+	log.Printf("Game starting - %v\n", requestData.GameId)
 	responseData := GameStartResponse{
 		Color:   "#F7931D",
 		Name:    "SWU Bounty Snake",
@@ -35,6 +37,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 	responseData := MoveResponse{
 		Move: snake.Move(&gameState),
 	}
+	log.Printf("Move request - direction:%v\n", responseData.Move)
 	b, err := json.Marshal(responseData)
 	if err != nil {
 		log.Fatalf("%v", err)
