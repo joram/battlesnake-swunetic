@@ -1,13 +1,6 @@
 package main
 
-import (
-	"math/rand"
-	"time"
-)
-
-// NOTES:
-// maybe split into multiple files if this gets too big
-// these funcs will take in board state when the other branch gets in
+// NOTE: maybe split into multiple files if this gets too big
 
 func GoStraightHeuristic(gameState *GameState) string {
 

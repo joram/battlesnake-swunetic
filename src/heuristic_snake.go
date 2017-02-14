@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"sort"
 	"sync"
-	"time"
 )
 
 func (weightedHeuristic *WeightedHeuristic) Calculate(gameState *GameState) {
