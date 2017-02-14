@@ -37,7 +37,6 @@ func (gameState *GameState) NextGameState() *GameState {
 		state:           gameState.state,
 	}
 
-	println(fmt.Sprintf("Board Turn: %v", gameState.Turn))
 	// get all moves
 	moveDirections := map[string]string{}
 	for _, snake := range gameState.HeuristicSnakes {
@@ -58,7 +57,7 @@ func (gameState *GameState) NextGameState() *GameState {
 
 	// collision
 	for snakeId, newHead := range newHeads {
-		if nextGameState.IsSolid(newHead) {
+		if gameState.IsSolid(newHead, snakeId) {
 			nextGameState.KillSnake(snakeId)
 		}
 	}
@@ -83,7 +82,7 @@ func (gameState *GameState) NextGameState() *GameState {
 	return &nextGameState
 }
 
-func (gameState *GameState) IsSolid(point Point) bool {
+func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
 	if point.X < 0 || point.X >= gameState.Width {
 		return true
 	}
@@ -93,9 +92,11 @@ func (gameState *GameState) IsSolid(point Point) bool {
 
 	// TODO: take in to account tale shrinks (when no food was eaten)
 	for _, snake := range gameState.Snakes {
-		for _, coord := range snake.Coords {
+		for i, coord := range snake.Coords {
 			if coord.X == point.X && coord.Y == point.Y {
-				return true
+				if !(i == 0 && snake.Id == ignoreSnakeHead) {
+					return true
+				}
 			}
 		}
 	}
@@ -103,6 +104,7 @@ func (gameState *GameState) IsSolid(point Point) bool {
 }
 
 func (gameState *GameState) KillSnake(snakeId string) {
+	fmt.Printf("Killing snake %v\n", snakeId)
 	newSnakes := []Snake{}
 	for _, snake := range gameState.Snakes {
 		if snake.Id != snakeId {

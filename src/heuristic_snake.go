@@ -4,11 +4,13 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/sendwithus/lib-go"
 	"math/rand"
+	"sort"
 	"sync"
 )
 
-func (weightedHeuristic *WeightedHeuristic) Calculate(gameState *GameState) {
-	weightedHeuristic.move = weightedHeuristic.moveHeuristic(gameState)
+func (h *WeightedHeuristic) Calculate(gameState *GameState) {
+	direction := h.MoveFunc(gameState)
+	h.Move = direction
 }
 
 func NewHeuristicSnake(id string) HeuristicSnake {
@@ -19,14 +21,17 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 
 	heuristics := map[string]MoveHeuristic{
 		"straight": GoStraightHeuristic,
+		"random":   RandomHeuristic,
 	}
 
 	for name, heuristic := range heuristics {
-		snake.WeightedHeuristics = append(snake.WeightedHeuristics, WeightedHeuristic{
-			weight:        getWeight(name),
-			moveHeuristic: heuristic,
-			Name:          name,
-		})
+		weightedHeuristic := WeightedHeuristic{
+			Weight:   getWeight(name),
+			MoveFunc: heuristic,
+			Move:     NOOP,
+			Name:     name,
+		}
+		snake.WeightedHeuristics = append(snake.WeightedHeuristics, weightedHeuristic)
 	}
 	return snake
 }
@@ -40,21 +45,21 @@ func getWeight(name string) int {
 
 	weight, err := redis.Int(c.Do("GET", name))
 	if err != nil || weight == 0 {
-		weight = rand.Intn(50) // figure out a good starting weight for a new heuristic
+		weight = rand.Intn(50) // figure out a good starting Weight for a new heuristic
 	}
 	return weight
 }
 
 func (snake *HeuristicSnake) Move(gameState *GameState) string {
-	var heuristicWaitGroup sync.WaitGroup
-	heuristicWaitGroup.Add(len(snake.WeightedHeuristics))
 
 	// do heuristics
+	var heuristicWaitGroup sync.WaitGroup
 	for _, weightedHeuristic := range snake.WeightedHeuristics {
-		go func(h *WeightedHeuristic) {
-			h.Calculate(gameState)
-			heuristicWaitGroup.Done()
-		}(&weightedHeuristic)
+		heuristicWaitGroup.Add(1)
+		go func(wh *WeightedHeuristic, wg *sync.WaitGroup) {
+			wh.Calculate(gameState)
+			wg.Done()
+		}(&weightedHeuristic, &heuristicWaitGroup)
 	}
 	heuristicWaitGroup.Wait()
 
@@ -64,19 +69,29 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 		DOWN:  0,
 		LEFT:  0,
 		RIGHT: 0,
+		NOOP:  0,
 	}
-	for _, weightedHeuristic := range snake.WeightedHeuristics {
-		weights[weightedHeuristic.move] += weightedHeuristic.weight
+	for _, wh := range snake.WeightedHeuristics {
+		weights[wh.Move] += wh.Weight
+	}
+	weights[NOOP] = 0
+
+	weightedDirections := WeightedDirections{
+		WeightedDirection{Direction: UP, Weight: weights[UP]},
+		WeightedDirection{Direction: DOWN, Weight: weights[DOWN]},
+		WeightedDirection{Direction: LEFT, Weight: weights[LEFT]},
+		WeightedDirection{Direction: RIGHT, Weight: weights[RIGHT]},
 	}
 
-	// pick heaviest weighted move
-	bestDirection := UP
-	bestWeight := weights[UP]
-	for direction, weight := range weights {
-		if weight > bestWeight {
-			bestDirection = direction
+	sort.Sort(weightedDirections)
+	for _, weightedDirection := range weightedDirections {
+		head := gameState.MySnake().Coords[0]
+		directionOfMovement := directionVector(weightedDirection.Direction)
+		possibleNewHead := head.Add(directionOfMovement)
+		if !gameState.IsSolid(possibleNewHead, snake.Id) {
+			return weightedDirection.Direction
 		}
 	}
 
-	return bestDirection
+	return NOOP
 }

@@ -1,0 +1,1 @@
+export REDIS_URL=sendwithus.local.web-app.redis:6379

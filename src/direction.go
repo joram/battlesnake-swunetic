@@ -6,6 +6,7 @@ const UP = "up"
 const DOWN = "down"
 const LEFT = "left"
 const RIGHT = "right"
+const NOOP = "no-op"
 
 func directionVector(direction string) Point {
 	if direction == UP {

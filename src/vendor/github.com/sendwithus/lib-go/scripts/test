@@ -1,7 +1,0 @@
-#!/bin/bash
-#? test the app
-
-swu build || exit 1
-
-docker run --rm --env-file scripts/.env -v "$PWD"/src:/go/src/github.com/sendwithus/lib-go -v "$PWD"/pkg:/go/pkg -v "$PWD"/bin:/go/bin \
-    -w /go/src/github.com/sendwithus/lib-go golang:1.7-alpine go test $@

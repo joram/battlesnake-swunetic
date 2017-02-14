@@ -14,7 +14,7 @@ func main() {
 
 	if !*simulate {
 		http.HandleFunc("/start", start)
-		http.HandleFunc("/move", move)
+		http.HandleFunc("/Move", move)
 		port := os.Getenv("PORT")
 		if port == "" {
 			port = "9000"
@@ -24,7 +24,7 @@ func main() {
 		http.ListenAndServe(":"+port, nil)
 	} else {
 		log.Println("Simulate a game to train swunetics!")
-		game := NewGame(4)
+		game := NewGame(2)
 		game.Run()
 	}
 }

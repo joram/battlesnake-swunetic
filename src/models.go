@@ -24,7 +24,7 @@ type MoveRequest struct {
 }
 
 type MoveResponse struct {
-	Move  string  `json:"move"`
+	Move  string  `json:"Move"`
 	Taunt *string `json:"taunt,omitempty"`
 }
 
@@ -48,10 +48,10 @@ type GameState struct {
 type MoveHeuristic func(gameState *GameState) string
 
 type WeightedHeuristic struct {
-	weight        int
-	move          string
-	Name          string
-	moveHeuristic MoveHeuristic
+	Weight   int
+	Move     string
+	Name     string
+	MoveFunc MoveHeuristic
 }
 
 type HeuristicSnake struct {
@@ -77,3 +77,10 @@ type Snake struct {
 	Name         string  `json:"name"`
 	Taunt        string  `json:"taunt"`
 }
+
+type WeightedDirection struct {
+	Direction string
+	Weight    int
+}
+
+type WeightedDirections []WeightedDirection
