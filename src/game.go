@@ -34,7 +34,6 @@ func NewGame(numSnakes int) *Game {
 	}
 }
 
-
 func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Print()
