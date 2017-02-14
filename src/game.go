@@ -16,7 +16,7 @@ func NewGame(numberOfSnakes int) Game {
 	// towards optimal weighting.
 	snakes := []HeuristicSnake{}
 	for i := 0; i < numberOfSnakes; i++ {
-		snake := NewHeuristicSnake([]int{})
+		snake := NewHeuristicSnake()
 		snakes = append(snakes, snake)
 	}
 
