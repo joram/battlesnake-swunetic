@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#? build the container
+
+if [ ! -d "bin" ]; then
+    mkdir bin
+fi
+
+if [ ! -d "pkg" ]; then
+    mkdir pkg
+fi
+
+docker run --rm -v "$PWD":/go/src/github.com/sendwithus/lib-go -v "$PWD"/pkg:/go/pkg -v "$PWD"/bin:/go/bin \
+    -w /go/src/github.com/sendwithus/lib-go golang:1.7-alpine go install -v || exit 1;
