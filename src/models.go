@@ -41,6 +41,7 @@ type GameState struct {
 	Food            []Point `json:"food"`
 	state           string
 	winners         []HeuristicSnake
+	losers          []HeuristicSnake
 	You             string
 }
 
@@ -56,6 +57,7 @@ type WeightedHeuristic struct {
 type HeuristicSnake struct {
 	Id                 string
 	WeightedHeuristics []WeightedHeuristic
+	DiedOnTurn         int
 }
 
 type BoardCell struct {
