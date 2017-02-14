@@ -17,12 +17,14 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 	}
 
 	heuristics := map[string]MoveHeuristic{
-	//	 this is where we list all heuristics we've written
+		"straight": GoStraightHeuristic,
 	}
+
 	for name, heuristic := range heuristics {
 		snake.WeightedHeuristics = append(snake.WeightedHeuristics, WeightedHeuristic{
 			weight:        getWeight(name),
 			moveHeuristic: heuristic,
+			Name:          name,
 		})
 	}
 	return snake

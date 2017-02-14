@@ -41,6 +41,7 @@ type GameState struct {
 	Food            []Point `json:"food"`
 	state           string
 	winners         []HeuristicSnake
+	You             string
 }
 
 type MoveHeuristic func(gameState *GameState) string
@@ -48,6 +49,7 @@ type MoveHeuristic func(gameState *GameState) string
 type WeightedHeuristic struct {
 	weight        int
 	move          string
+	Name          string
 	moveHeuristic MoveHeuristic
 }
 
