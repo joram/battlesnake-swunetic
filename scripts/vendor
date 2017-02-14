@@ -1,0 +1,19 @@
+#!/bin/bash
+#? Vendor a new dependency
+
+dir=`mktemp -d` && pushd $dir
+repo=$1
+git_repo=${repo#*/}
+last_dir=${repo##*/}
+
+git clone git@github.com:$git_repo
+cd $last_dir
+if [ -f .gitignore ]; then
+    rm .gitignore
+fi
+rm -rf .git
+
+popd
+
+mkdir -p "src/vendor/$repo/"
+cp -r "$dir/$last_dir/" "src/vendor/$repo/"
