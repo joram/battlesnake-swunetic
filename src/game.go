@@ -52,7 +52,7 @@ func (game *Game) Print() {
 		for _, snake := range game.currentGameState.winners {
 			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
 			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.weight)
+				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
 			}
 			println(winnerDetails)
 		}
@@ -60,7 +60,7 @@ func (game *Game) Print() {
 		for _, snake := range game.currentGameState.losers {
 			winnerDetails := fmt.Sprintf("LOSER[%v] %v:\t", snake.DiedOnTurn, snake.Id)
 			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.weight)
+				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
 			}
 			println(winnerDetails)
 		}
