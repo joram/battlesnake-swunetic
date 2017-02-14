@@ -75,3 +75,10 @@ type Snake struct {
 	Name         string  `json:"name"`
 	Taunt        string  `json:"taunt"`
 }
+
+type WeightedDirection struct {
+	Direction string
+	Weight    int
+}
+
+type WeightedDirections []WeightedDirection

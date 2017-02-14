@@ -9,8 +9,6 @@ import (
 // maybe split into multiple files if this gets too big
 // these funcs will take in board state when the other branch gets in
 
-
-
 func GoStraightHeuristic(gameState *GameState) string {
 
 	mySnake := gameState.MySnake()
@@ -32,22 +30,5 @@ func GoStraightHeuristic(gameState *GameState) string {
 			break
 		}
 	}
-
-	// random other direction
-	availableDirections := []string{}
-	for _, possibleDirection := range allDirections {
-		possibleNewHead := head.Add(directionOfMovement)
-		if !gameState.IsSolid(possibleNewHead) {
-			availableDirections = append(availableDirections, possibleDirection)
-		}
-	}
-
-	if len(availableDirections) > 0 {
-		rand.Seed(time.Now().Unix())
-		n := rand.Int() % len(availableDirections)
-		return availableDirections[n]
-	}
-
-	// SO DEAD!
-	return UP
+	return NOOP
 }

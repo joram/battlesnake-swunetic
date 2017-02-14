@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"math/rand"
+	"sort"
 	"sync"
+	"time"
 )
 
 func (weightedHeuristic *WeightedHeuristic) Calculate(gameState *GameState) {
@@ -63,19 +66,30 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 		DOWN:  0,
 		LEFT:  0,
 		RIGHT: 0,
+		NOOP:  0,
 	}
 	for _, weightedHeuristic := range snake.WeightedHeuristics {
 		weights[weightedHeuristic.move] += weightedHeuristic.weight
 	}
+	weights[NOOP] = 0
+	fmt.Printf("weights: UP:%v, DOWN:%v, LEFT:%v, RIGHT:%V", weights[UP], weights[DOWN], weights[LEFT], weights[RIGHT])
 
-	// pick heaviest weighted move
-	bestDirection := UP
-	bestWeight := weights[UP]
-	for direction, weight := range weights {
-		if weight > bestWeight {
-			bestDirection = direction
+	weightedDirections := WeightedDirections{
+		WeightedDirection{Direction: UP, Weight: weights[UP]},
+		WeightedDirection{Direction: DOWN, Weight: weights[DOWN]},
+		WeightedDirection{Direction: LEFT, Weight: weights[LEFT]},
+		WeightedDirection{Direction: RIGHT, Weight: weights[RIGHT]},
+	}
+
+	sort.Sort(weightedDirections)
+	for _, weightedDirection := range weightedDirections {
+		head := gameState.MySnake().Coords[0]
+		directionOfMovement := directionVector(weightedDirection.Direction)
+		possibleNewHead := head.Add(directionOfMovement)
+		if !gameState.IsSolid(possibleNewHead) {
+			return weightedDirection.Direction
 		}
 	}
 
-	return bestDirection
+	return NOOP
 }
