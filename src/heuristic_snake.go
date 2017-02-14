@@ -6,32 +6,22 @@ import (
 	"sync"
 )
 
-type MoveHeuristic func(request *MoveRequest) string
 
-type WeightedHeuristic struct {
-	weight        int
-	move          string
-	moveHeuristic MoveHeuristic
+func (weightedHeuristic *WeightedHeuristic) Calculate(gameState *GameState) {
+	weightedHeuristic.move = weightedHeuristic.moveHeuristic(gameState)
 }
 
-func (weightedHeuristic *WeightedHeuristic) Calculate(request *MoveRequest) {
-	weightedHeuristic.move = weightedHeuristic.moveHeuristic(request)
-}
-
-type HeuristicSnake struct {
-	weightedHeuristics []WeightedHeuristic
-}
-
-func NewHeuristicSnake() HeuristicSnake {
+func NewHeuristicSnake(id string) HeuristicSnake {
 	snake := HeuristicSnake{
-		weightedHeuristics: []WeightedHeuristic{},
+		Id: id,
+		WeightedHeuristics: []WeightedHeuristic{},
 	}
 
 	heuristics := map[string]MoveHeuristic{
 	//	 this is where we list all heuristics we've written
 	}
 	for name, heuristic := range heuristics {
-		snake.weightedHeuristics = append(snake.weightedHeuristics, WeightedHeuristic{
+		snake.WeightedHeuristics = append(snake.WeightedHeuristics, WeightedHeuristic{
 			weight:        getWeight(name),
 			moveHeuristic: heuristic,
 		})
@@ -53,14 +43,14 @@ func getWeight(name string) int {
 	return weight
 }
 
-func (snake *HeuristicSnake) Move(request *MoveRequest) string {
+func (snake *HeuristicSnake) Move(gameState *GameState) string {
 	var heuristicWaitGroup sync.WaitGroup
-	heuristicWaitGroup.Add(len(snake.weightedHeuristics))
+	heuristicWaitGroup.Add(len(snake.WeightedHeuristics))
 
 	// do heuristics
-	for _, weightedHeuristic := range snake.weightedHeuristics {
+	for _, weightedHeuristic := range snake.WeightedHeuristics {
 		go func(h *WeightedHeuristic) {
-			h.Calculate(request)
+			h.Calculate(gameState)
 			heuristicWaitGroup.Done()
 		}(&weightedHeuristic)
 	}
@@ -73,7 +63,7 @@ func (snake *HeuristicSnake) Move(request *MoveRequest) string {
 		"l": 0,
 		"r": 0,
 	}
-	for _, weightedHeuristic := range snake.weightedHeuristics {
+	for _, weightedHeuristic := range snake.WeightedHeuristics {
 		weights[weightedHeuristic.move] += weightedHeuristic.weight
 	}
 
