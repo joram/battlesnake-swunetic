@@ -6,24 +6,25 @@ import (
 	"sync"
 )
 
-
 func (weightedHeuristic *WeightedHeuristic) Calculate(gameState *GameState) {
 	weightedHeuristic.move = weightedHeuristic.moveHeuristic(gameState)
 }
 
 func NewHeuristicSnake(id string) HeuristicSnake {
 	snake := HeuristicSnake{
-		Id: id,
+		Id:                 id,
 		WeightedHeuristics: []WeightedHeuristic{},
 	}
 
 	heuristics := map[string]MoveHeuristic{
-	//	 this is where we list all heuristics we've written
+		"straight": GoStraightHeuristic,
 	}
+
 	for name, heuristic := range heuristics {
 		snake.WeightedHeuristics = append(snake.WeightedHeuristics, WeightedHeuristic{
 			weight:        getWeight(name),
 			moveHeuristic: heuristic,
+			Name:          name,
 		})
 	}
 	return snake
