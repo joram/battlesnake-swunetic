@@ -3,13 +3,12 @@ package main
 import "fmt"
 
 func NewGame(numSnakes int) *Game {
-	initialMoveRequest := MoveRequest{}  // TODO: build this out
+	initialMoveRequest := MoveRequest{} // TODO: build this out
 	initialGameState := NewGameState(initialMoveRequest)
 	return &Game{
 		currentGameState: &initialGameState,
 	}
 }
-
 
 func (game *Game) Run() []HeuristicSnake {
 	for {

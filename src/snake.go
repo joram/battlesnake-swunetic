@@ -1,6 +1,5 @@
 package main
 
-
 func (snake *Snake) Extend(direction string) Point {
 	curHead := snake.Coords[0]
 	newHead := curHead.Add(directionVector(direction))
