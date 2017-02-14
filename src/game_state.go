@@ -21,6 +21,10 @@ func NewGameState(moveRequest MoveRequest) GameState {
 	}
 }
 
+func (gameState *GameState) MySnake() *Snake {
+	return gameState.GetSnake(gameState.You)
+}
+
 func (gameState *GameState) NextGameState() *GameState {
 	nextGameState := GameState{
 		Turn:            gameState.Turn + 1,
@@ -37,6 +41,7 @@ func (gameState *GameState) NextGameState() *GameState {
 	// get all moves
 	moveDirections := map[string]string{}
 	for _, snake := range gameState.HeuristicSnakes {
+		gameState.You = snake.Id
 		moveDirections[snake.Id] = snake.Move(gameState)
 	}
 
