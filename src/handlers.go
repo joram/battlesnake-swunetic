@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -9,8 +10,14 @@ import (
 func start(w http.ResponseWriter, r *http.Request) {
 	var requestData GameStartRequest
 	json.NewDecoder(r.Body).Decode(&requestData)
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
 	responseData := GameStartResponse{
-		Color: "#00FF00",
+		Color:   "#F7931D",
+		Name:    "SWU Bounty Snake",
+		HeadUrl: stringPtr(fmt.Sprintf("%v://%v/swu-logo.png", scheme, r.Host)),
 	}
 	b, err := json.Marshal(responseData)
 	if err != nil {
@@ -23,8 +30,10 @@ func start(w http.ResponseWriter, r *http.Request) {
 func move(w http.ResponseWriter, r *http.Request) {
 	var requestData MoveRequest
 	json.NewDecoder(r.Body).Decode(&requestData)
+	snake := NewHeuristicSnake(requestData.GameId)
+	gameState := NewGameState(requestData)
 	responseData := MoveResponse{
-		Move: "up",
+		Move: snake.Move(gameState),
 	}
 	b, err := json.Marshal(responseData)
 	if err != nil {
