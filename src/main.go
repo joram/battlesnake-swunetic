@@ -13,9 +13,6 @@ func main() {
 	flag.Parse()
 
 	if !*simulate {
-		fs := http.FileServer(http.Dir("assets"))
-		http.Handle("/", fs)
-
 		http.HandleFunc("/start", start)
 		http.HandleFunc("/move", move)
 		port := os.Getenv("PORT")
