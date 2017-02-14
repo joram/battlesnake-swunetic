@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"github.com/sendwithus/lib-go"
 	"math/rand"
 	"sort"
 	"sync"
@@ -36,7 +37,7 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 }
 
 func getWeight(name string) int {
-	c, err := redis.Dial("tcp", "sendwithus.local.web-app.redis:6379") // TODO: update to redis on heroku
+	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
 	if err != nil {
 		panic(err)
 	}
