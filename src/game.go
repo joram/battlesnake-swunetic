@@ -3,7 +3,31 @@ package main
 import "fmt"
 
 func NewGame(numSnakes int) *Game {
-	initialMoveRequest := MoveRequest{}  // TODO: build this out
+	initialMoveRequest := MoveRequest{
+		Food: []Point{},
+		GameId: "the one and only game atm",
+		Height: 20,
+		Width: 20,
+		Turn:0,
+		Snakes: []Snake{},
+		You: "",
+	}
+
+	for i := 0; i < numSnakes; i += 1 {
+		snake := Snake{
+			Id: fmt.Sprintf("Snake-%v", i),
+			Name: fmt.Sprintf("Snake-%v", i),
+			Taunt: "poop",
+			Coords: []Point{
+				Point{X:i, Y:i},
+				Point{X:i, Y:i},
+				Point{X:i, Y:i},
+			},
+			HealthPoints: 100,
+		}
+		initialMoveRequest.Snakes = append(initialMoveRequest.Snakes, snake)
+	}
+
 	initialGameState := NewGameState(initialMoveRequest)
 	return &Game{
 		currentGameState: &initialGameState,
