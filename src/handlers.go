@@ -33,7 +33,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 	snake := NewHeuristicSnake(requestData.GameId)
 	gameState := NewGameState(requestData)
 	responseData := MoveResponse{
-		Move: snake.Move(gameState),
+		Move: snake.Move(&gameState),
 	}
 	b, err := json.Marshal(responseData)
 	if err != nil {
