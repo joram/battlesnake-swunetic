@@ -28,6 +28,10 @@ type MoveResponse struct {
 	Taunt *string `json:"taunt,omitempty"`
 }
 
+type Game struct {
+	currentGameState *GameState
+}
+
 type GameState struct {
 	HeuristicSnakes []HeuristicSnake
 	Snakes          []Snake `json:"snakes"`

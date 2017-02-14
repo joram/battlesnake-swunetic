@@ -21,25 +21,6 @@ func NewGameState(moveRequest MoveRequest) GameState {
 	}
 }
 
-func (gameState *GameState) Run() []HeuristicSnake {
-	gameState.state = "running"
-	for {
-		gameState = gameState.NextGameState()
-		if gameState.state != "running" {
-			fmt.Printf("game ended: %v on turn %v\n", gameState.state, gameState.Turn)
-			for _, snake := range gameState.HeuristicSnakes {
-				weights := []int{}
-				for _, w := range snake.WeightedHeuristics {
-					weights = append(weights, w.weight)
-				}
-				fmt.Printf("winner: %v\n", weights)
-			}
-			break
-		}
-	}
-	return gameState.winners
-}
-
 func (gameState *GameState) NextGameState() *GameState {
 	nextGameState := GameState{
 		Turn:            gameState.Turn + 1,
@@ -52,6 +33,7 @@ func (gameState *GameState) NextGameState() *GameState {
 		state:           gameState.state,
 	}
 
+	println(fmt.Sprintf("Board Turn: %v", gameState.Turn))
 	// get all moves
 	moveDirections := map[string]string{}
 	for _, snake := range gameState.HeuristicSnakes {
@@ -67,6 +49,7 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	// eat or shrink
+	// TODO
 
 	// collision
 	for snakeId, newHead := range newHeads {
@@ -76,6 +59,21 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	// check win/draw states
+	numSnakes := len(nextGameState.Snakes)
+	if numSnakes == 1 {
+		nextGameState.state = "Won"
+		nextGameState.winners = []HeuristicSnake{
+			*nextGameState.GetHeuristicSnake(nextGameState.Snakes[0].Id),
+		}
+	}
+	if numSnakes == 0 {
+		nextGameState.state = "Draw"
+		nextGameState.winners = []HeuristicSnake{}
+		for _, snake := range gameState.Snakes {
+			heuristicSnake := gameState.GetHeuristicSnake(snake.Id)
+			nextGameState.winners = append(nextGameState.winners, *heuristicSnake)
+		}
+	}
 
 	return &nextGameState
 }
@@ -113,6 +111,15 @@ func (gameState *GameState) GetSnake(snakeId string) *Snake {
 	for i, snake := range gameState.Snakes {
 		if snake.Id == snakeId {
 			return &gameState.Snakes[i]
+		}
+	}
+	return nil
+}
+
+func (gameState *GameState) GetHeuristicSnake(snakeId string) *HeuristicSnake {
+	for i, snake := range gameState.HeuristicSnakes {
+		if snake.Id == snakeId {
+			return &gameState.HeuristicSnakes[i]
 		}
 	}
 	return nil
