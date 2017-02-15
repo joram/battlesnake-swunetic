@@ -77,15 +77,10 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 	}
 	weights[NOOP] = 0
 
-	weightedDirections := WeightedDirections{
-		WeightedDirection{Direction: UP, Weight: weights[UP]},
-		WeightedDirection{Direction: DOWN, Weight: weights[DOWN]},
-		WeightedDirection{Direction: LEFT, Weight: weights[LEFT]},
-		WeightedDirection{Direction: RIGHT, Weight: weights[RIGHT]},
-	}
+	ch := make(chan WeightedDirection)
+	go sortWeightsMap(weights, ch)
 
-	sort.Sort(weightedDirections)
-	for _, weightedDirection := range weightedDirections {
+	for weightedDirection := range ch {
 		head := gameState.MySnake().Coords[0]
 		directionOfMovement := directionVector(weightedDirection.Direction)
 		possibleNewHead := head.Add(directionOfMovement)
@@ -95,4 +90,25 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 	}
 
 	return NOOP
+}
+
+func sortWeightsMap(weights map[string]int, output chan WeightedDirection) {
+	n := map[int][]string{}
+	var a []int
+	for k, v := range weights {
+		n[v] = append(n[v], k)
+	}
+	for k := range n {
+		a = append(a, k)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(a)))
+	for _, direction := range a {
+		for _, weight := range n[direction] {
+			output <- WeightedDirection{
+				Direction: weight,
+				Weight:    direction,
+			}
+		}
+	}
+	close(output)
 }
