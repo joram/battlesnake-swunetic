@@ -53,7 +53,32 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	// eat or shrink
-	// TODO
+	foodEaten := []Point{}
+	for snakeId, newHead := range newHeads {
+		snake := gameState.GetSnake(snakeId)
+		if gameState.FoodAt(&newHead) {
+			foodEaten = append(foodEaten, newHead)
+			snake.HealthPoints = 100
+		} else {
+			snake.HealthPoints -= 1
+			if snake.HealthPoints <= 0 {
+				nextGameState.KillSnake(snakeId)
+			}
+			snake.Coords = snake.Coords[len(snake.Coords)-1:]
+
+		}
+	}
+
+	// remove food
+	for _, eatenFood := range foodEaten {
+		newFoodList := []Point{}
+		for _, food := range gameState.Food {
+			if !(food.X == eatenFood.X && food.Y == eatenFood.Y) {
+				newFoodList = append(newFoodList, food)
+			}
+		}
+		gameState.Food = newFoodList
+	}
 
 	// collision
 	for snakeId, newHead := range newHeads {
@@ -80,6 +105,15 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	return &nextGameState
+}
+
+func (gameState *GameState) FoodAt(p *Point) bool {
+	for _, food := range gameState.Food {
+		if food.X == p.X && food.Y == p.Y {
+			return true
+		}
+	}
+	return false
 }
 
 func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
