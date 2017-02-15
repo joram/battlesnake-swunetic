@@ -43,6 +43,7 @@ func (game *Game) Run() []HeuristicSnake {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
 		if game.SpawnFood() {
+			println("spawning food")
 			game.currentGameState.SpawnFood()
 		}
 		if game.currentGameState.state != "running" {
@@ -53,12 +54,12 @@ func (game *Game) Run() []HeuristicSnake {
 	return game.currentGameState.winners
 }
 func (game *Game) SpawnFood() bool {
-	return rand.Int()%game.foodFrequency == 0
+	return rand.Int()%game.foodFrequency == 1
 }
 
 func (game *Game) Print() {
-	fmt.Printf("game is %v on turn %v\n", game.currentGameState.state, game.currentGameState.Turn)
 	if game.currentGameState.state != "running" {
+		fmt.Printf("Game over on turn %v\n", game.currentGameState.Turn)
 		for _, snake := range game.currentGameState.winners {
 			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
 			for _, w := range snake.WeightedHeuristics {

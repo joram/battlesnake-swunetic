@@ -122,7 +122,8 @@ func (gameState *GameState) SpawnFood() {
 	}
 
 	i := rand.Int() % len(emptyPoints)
-	gameState.Food = append(gameState.Food, emptyPoints[i])
+	p := emptyPoints[i]
+	gameState.Food = append(gameState.Food, p)
 }
 
 func (gameState *GameState) FoodAt(p *Point) bool {
