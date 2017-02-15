@@ -1,8 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
-func NewGame(numSnakes int) *Game {
+func NewGame(numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   []Point{},
 		GameId: "the one and only game atm",
@@ -31,6 +34,7 @@ func NewGame(numSnakes int) *Game {
 	initialGameState := NewGameState(initialMoveRequest)
 	return &Game{
 		currentGameState: &initialGameState,
+		foodFrequency:    foodFrequency,
 	}
 }
 
@@ -38,12 +42,18 @@ func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
+		if game.SpawnFood() {
+			game.currentGameState.SpawnFood()
+		}
 		if game.currentGameState.state != "running" {
 			break
 		}
 	}
 	game.Print()
 	return game.currentGameState.winners
+}
+func (game *Game) SpawnFood() bool {
+	return rand.Int()%game.foodFrequency == 0
 }
 
 func (game *Game) Print() {

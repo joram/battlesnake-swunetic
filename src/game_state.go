@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func NewGameState(moveRequest MoveRequest) GameState {
 
@@ -80,6 +83,30 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	return &nextGameState
+}
+
+func (gameState *GameState) SpawnFood() {
+	emptyPoints := []Point{}
+	for x := 0; x < gameState.Width; x += 1 {
+		for y := 0; y < gameState.Height; y += 1 {
+			p := Point{X: x, Y: y}
+			if !gameState.IsSolid(p, "") {
+				emptyPoints = append(emptyPoints, p)
+			}
+		}
+	}
+
+	i := rand.Int() % len(emptyPoints)
+	gameState.Food = append(gameState.Food, emptyPoints[i])
+}
+
+func (gameState *GameState) FoodAt(p *Point) bool {
+	for _, food := range gameState.Food {
+		if food.X == p.X && food.Y == p.Y {
+			return true
+		}
+	}
+	return false
 }
 
 func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {

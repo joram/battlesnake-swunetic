@@ -30,6 +30,7 @@ type MoveResponse struct {
 
 type Game struct {
 	currentGameState *GameState
+	foodFrequency    int
 }
 
 type GameState struct {
