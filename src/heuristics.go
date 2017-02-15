@@ -19,6 +19,10 @@ func NearestFoodHeuristic(gameState *GameState) string {
 		}
 	}
 
+	if closestFood == nil {
+		return NOOP
+	}
+
 	if closestFood.X < head.X && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
 		return LEFT
 	} else if closestFood.X > head.X && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
