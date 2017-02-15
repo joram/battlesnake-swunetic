@@ -14,7 +14,7 @@ func main() {
 
 	if !*simulate {
 		http.HandleFunc("/start", start)
-		http.HandleFunc("/Move", move)
+		http.HandleFunc("/move", move)
 		port := os.Getenv("PORT")
 		if port == "" {
 			port = "9000"
