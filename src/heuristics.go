@@ -4,6 +4,34 @@ import "math/rand"
 
 // NOTE: maybe split into multiple files if this gets too big
 
+func NearestFoodHeuristic(gameState *GameState) string {
+
+	closestFood := &Vector{
+		X: gameState.Width,
+		Y: gameState.Height,
+	}
+
+	snake := gameState.MySnake()
+	head := snake.Coords[0]
+	for _, p := range gameState.Food {
+		test := getDistanceBetween(head, p)
+		if test.Magnitude() < closestFood.Magnitude() {
+			closestFood = test
+		}
+	}
+
+	if closestFood.X < head.X && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
+		return LEFT
+	} else if closestFood.X > head.X && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
+		return RIGHT
+	} else if closestFood.Y < head.Y && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
+		return UP
+	} else if closestFood.Y > head.Y && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
+		return DOWN
+	}
+	return NOOP
+}
+
 func GoStraightHeuristic(gameState *GameState) string {
 
 	mySnake := gameState.MySnake()
@@ -15,7 +43,7 @@ func GoStraightHeuristic(gameState *GameState) string {
 	}
 	allDirections := []string{UP, DOWN, LEFT, RIGHT}
 
-	// try nd go straight
+	// try and go straight
 	for _, direction := range allDirections {
 		if directionOfMovement == directionVector(direction) {
 			possibleNewHead := head.Add(directionOfMovement)

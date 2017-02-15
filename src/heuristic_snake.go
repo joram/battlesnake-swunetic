@@ -20,8 +20,9 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 	}
 
 	heuristics := map[string]MoveHeuristic{
-		"straight": GoStraightHeuristic,
-		"random":   RandomHeuristic,
+		"nearest-food": NearestFoodHeuristic,
+		"straight":     GoStraightHeuristic,
+		"random":       RandomHeuristic,
 	}
 
 	for name, heuristic := range heuristics {

@@ -233,7 +233,7 @@ func (s sqsServiceImpl) GetQueueSizes(prefix string) ([]QueueInfo, error) {
 	}
 
 	items := []QueueInfo{}
-	for _, url := range(result.QueueUrls) {
+	for _, url := range result.QueueUrls {
 		size, err := s.GetQueueSizeByUrl(url, true)
 		if err != nil {
 			return items, err
@@ -241,7 +241,7 @@ func (s sqsServiceImpl) GetQueueSizes(prefix string) ([]QueueInfo, error) {
 
 		// the queue name is always the last bit of the queue url
 		items = append(items, QueueInfo{
-			Name: (*url)[strings.LastIndex(*url, "/") + 1:],
+			Name: (*url)[strings.LastIndex(*url, "/")+1:],
 			Size: size,
 		})
 	}
