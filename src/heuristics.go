@@ -6,16 +6,15 @@ import "math/rand"
 
 func NearestFoodHeuristic(gameState *GameState) string {
 
-	closestFood := &Vector{
-		X: gameState.Width,
-		Y: gameState.Height,
-	}
+	var closestFood *Vector
 
 	snake := gameState.MySnake()
 	head := snake.Coords[0]
 	for _, p := range gameState.Food {
 		test := getDistanceBetween(head, p)
-		if test.Magnitude() < closestFood.Magnitude() {
+		if closestFood == nil {
+			closestFood = test
+		} else if test.Magnitude() < closestFood.Magnitude() {
 			closestFood = test
 		}
 	}
