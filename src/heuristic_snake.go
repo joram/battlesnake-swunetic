@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/sendwithus/lib-go"
 	"math/rand"
@@ -86,7 +85,6 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 		directionOfMovement := directionVector(weightedDirection.Direction)
 		possibleNewHead := head.Add(directionOfMovement)
 		if !gameState.IsSolid(possibleNewHead, snake.Id) {
-			fmt.Println("Choosing:", weightedDirection.Direction)
 			return weightedDirection.Direction
 		}
 	}
