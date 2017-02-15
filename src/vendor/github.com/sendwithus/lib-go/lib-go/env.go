@@ -1,9 +1,9 @@
 package swu
 
 import (
-	"os"
 	"fmt"
 	"log"
+	"os"
 )
 
 func GetEnvVariable(name string, required bool) string {

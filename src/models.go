@@ -56,7 +56,7 @@ type WeightedHeuristic struct {
 
 type HeuristicSnake struct {
 	Id                 string
-	WeightedHeuristics []WeightedHeuristic
+	WeightedHeuristics []*WeightedHeuristic
 	DiedOnTurn         int
 }
 

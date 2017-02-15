@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/sendwithus/lib-go"
 	"math/rand"
@@ -16,7 +17,7 @@ func (h *WeightedHeuristic) Calculate(gameState *GameState) {
 func NewHeuristicSnake(id string) HeuristicSnake {
 	snake := HeuristicSnake{
 		Id:                 id,
-		WeightedHeuristics: []WeightedHeuristic{},
+		WeightedHeuristics: []*WeightedHeuristic{},
 	}
 
 	heuristics := map[string]MoveHeuristic{
@@ -26,7 +27,7 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 	}
 
 	for name, heuristic := range heuristics {
-		weightedHeuristic := WeightedHeuristic{
+		weightedHeuristic := &WeightedHeuristic{
 			Weight:   getWeight(name),
 			MoveFunc: heuristic,
 			Move:     NOOP,
@@ -55,12 +56,12 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 
 	// do heuristics
 	var heuristicWaitGroup sync.WaitGroup
-	for _, weightedHeuristic := range snake.WeightedHeuristics {
+	for i := range snake.WeightedHeuristics {
 		heuristicWaitGroup.Add(1)
-		go func(wh *WeightedHeuristic, wg *sync.WaitGroup) {
+		go func(wh *WeightedHeuristic) {
 			wh.Calculate(gameState)
-			wg.Done()
-		}(&weightedHeuristic, &heuristicWaitGroup)
+			heuristicWaitGroup.Done()
+		}(snake.WeightedHeuristics[i])
 	}
 	heuristicWaitGroup.Wait()
 
