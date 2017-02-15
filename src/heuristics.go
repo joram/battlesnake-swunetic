@@ -8,7 +8,7 @@ import (
 
 func NearestFoodHeuristic(gameState *GameState) string {
 
-	var closestFood *Vector = nil
+	var closestFood *Vector
 
 	snake := gameState.MySnake()
 	head := snake.Coords[0]

@@ -54,7 +54,7 @@ func (game *Game) Run() []HeuristicSnake {
 	return game.currentGameState.winners
 }
 func (game *Game) ShouldSpawnFood() bool {
-	return rand.Int()%game.foodFrequency == 1
+	return rand.Intn(game.foodFrequency) == 1
 }
 
 func (game *Game) Print() {
