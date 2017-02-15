@@ -42,7 +42,7 @@ func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
-		if game.SpawnFood() {
+		if game.ShouldSpawnFood() {
 			println("spawning food")
 			game.currentGameState.SpawnFood()
 		}
@@ -53,7 +53,7 @@ func (game *Game) Run() []HeuristicSnake {
 	game.Print()
 	return game.currentGameState.winners
 }
-func (game *Game) SpawnFood() bool {
+func (game *Game) ShouldSpawnFood() bool {
 	return rand.Int()%game.foodFrequency == 1
 }
 

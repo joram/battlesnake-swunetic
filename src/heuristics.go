@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 )
 
@@ -9,7 +8,7 @@ import (
 
 func NearestFoodHeuristic(gameState *GameState) string {
 
-	var closestFood *Vector
+	var closestFood *Vector = nil
 
 	snake := gameState.MySnake()
 	head := snake.Coords[0]
@@ -22,7 +21,10 @@ func NearestFoodHeuristic(gameState *GameState) string {
 		}
 	}
 
-	fmt.Printf("%v", closestFood)
+	if closestFood == nil {
+		return NOOP
+	}
+
 	if closestFood.X < head.X && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
 		return LEFT
 	} else if closestFood.X > head.X && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
