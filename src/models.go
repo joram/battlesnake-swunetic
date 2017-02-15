@@ -66,6 +66,7 @@ type BoardCell struct {
 	Snake *string `json:"snake,omitempty"`
 }
 
+type Vector Point
 type Point struct {
 	X int `json:"x"`
 	Y int `json:"y"`
