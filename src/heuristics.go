@@ -1,6 +1,8 @@
 package main
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // NOTE: maybe split into multiple files if this gets too big
 
@@ -38,6 +40,11 @@ func NearestFoodHeuristic(gameState *GameState) string {
 func GoStraightHeuristic(gameState *GameState) string {
 
 	mySnake := gameState.MySnake()
+
+	if len(mySnake.Coords) <= 1 {
+		return NOOP
+	}
+
 	head := mySnake.Coords[0]
 	neck := mySnake.Coords[1]
 	directionOfMovement := Point{

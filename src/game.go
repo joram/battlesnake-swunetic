@@ -1,8 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
-func NewGame(numSnakes int) *Game {
+func NewGame(numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   []Point{},
 		GameId: "the one and only game atm",
@@ -31,6 +34,7 @@ func NewGame(numSnakes int) *Game {
 	initialGameState := NewGameState(initialMoveRequest)
 	return &Game{
 		currentGameState: &initialGameState,
+		foodFrequency:    foodFrequency,
 	}
 }
 
@@ -38,6 +42,10 @@ func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
+		if game.ShouldSpawnFood() {
+			println("spawning food")
+			game.currentGameState.SpawnFood()
+		}
 		if game.currentGameState.state != "running" {
 			break
 		}
@@ -45,10 +53,13 @@ func (game *Game) Run() []HeuristicSnake {
 	game.Print()
 	return game.currentGameState.winners
 }
+func (game *Game) ShouldSpawnFood() bool {
+	return rand.Intn(game.foodFrequency) == 1
+}
 
 func (game *Game) Print() {
-	fmt.Printf("game is %v on turn %v\n", game.currentGameState.state, game.currentGameState.Turn)
 	if game.currentGameState.state != "running" {
+		fmt.Printf("Game over on turn %v\n", game.currentGameState.Turn)
 		for _, snake := range game.currentGameState.winners {
 			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
 			for _, w := range snake.WeightedHeuristics {

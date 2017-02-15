@@ -24,7 +24,7 @@ func main() {
 		http.ListenAndServe(":"+port, nil)
 	} else {
 		log.Println("Simulate a game to train swunetics!")
-		game := NewGame(2)
+		game := NewGame(2, 20)
 		game.Run()
 	}
 }
