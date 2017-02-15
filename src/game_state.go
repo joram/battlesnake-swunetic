@@ -21,6 +21,7 @@ func NewGameState(moveRequest MoveRequest) GameState {
 		Food:            moveRequest.Food,
 		winners:         []HeuristicSnake{},
 		state:           "running",
+		You:             moveRequest.You,
 	}
 }
 
@@ -38,6 +39,7 @@ func (gameState *GameState) NextGameState() *GameState {
 		Food:            gameState.Food,
 		winners:         gameState.winners,
 		state:           gameState.state,
+		You:             gameState.You,
 	}
 
 	// get all moves
