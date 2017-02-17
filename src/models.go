@@ -14,17 +14,25 @@ type GameStartResponse struct {
 }
 
 type MoveRequest struct {
-	Food   []Point `json:"food"`
-	GameId string  `json:"game_id"`
-	Height int     `json:"height"`
-	Width  int     `json:"width"`
-	Turn   int     `json:"turn"`
-	Snakes []Snake `json:"snakes"`
-	You    string  `json:"you"`
+	Food   [][]int            `json:"food"`
+	GameId string             `json:"game_id"`
+	Height int                `json:"height"`
+	Width  int                `json:"width"`
+	Turn   int                `json:"turn"`
+	Snakes []MoveRequestSnake `json:"snakes"`
+	You    string             `json:"you"`
+}
+
+type MoveRequestSnake struct {
+	Coords       [][]int `json:"coords"`
+	HealthPoints int     `json:"health_points"`
+	Id           string  `json:"id"`
+	Name         string  `json:"name"`
+	Taunt        string  `json:"taunt"`
 }
 
 type MoveResponse struct {
-	Move  string  `json:"Move"`
+	Move  string  `json:"move"`
 	Taunt *string `json:"taunt,omitempty"`
 }
 
@@ -35,11 +43,11 @@ type Game struct {
 
 type GameState struct {
 	HeuristicSnakes []HeuristicSnake
-	Snakes          []Snake `json:"snakes"`
-	Height          int     `json:"height"`
-	Width           int     `json:"width"`
-	Turn            int     `json:"turn"`
-	Food            []Point `json:"food"`
+	Snakes          []Snake
+	Height          int
+	Width           int
+	Turn            int
+	Food            []Point
 	state           string
 	winners         []HeuristicSnake
 	losers          []HeuristicSnake
@@ -61,23 +69,18 @@ type HeuristicSnake struct {
 	DiedOnTurn         int
 }
 
-type BoardCell struct {
-	State string  `json:"state"`
-	Snake *string `json:"snake,omitempty"`
-}
-
 type Vector Point
 type Point struct {
-	X int `json:"x"`
-	Y int `json:"y"`
+	X int
+	Y int
 }
 
 type Snake struct {
-	Coords       []Point `json:"coords"`
-	HealthPoints int     `json:"health_points"`
-	Id           string  `json:"id"`
-	Name         string  `json:"name"`
-	Taunt        string  `json:"taunt"`
+	Coords       []Point
+	HealthPoints int
+	Id           string
+	Name         string
+	Taunt        string
 }
 
 type WeightedDirection struct {

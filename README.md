@@ -1,6 +1,13 @@
 # battlesnake-swunetic
 Genetically training weight of snake heuristics
 
+# Setup
+run `swu services start` to get the game server running http://localhost:4000
+
+run `swu run` to build and run the snake server at http://localhost:9000
+
+*NOTE:* when you put your snake url in to the game server, it needs to be your public IP not localhost.
+
 # Overview
 
 ## Comparing Snakes
@@ -14,6 +21,8 @@ A certain amount of random varience will be introduced as well. This second gene
 These are the core of this logic, the better the heuristics the better the snake can be. A heuristic is just a simple function that takes a game board and returns a direction.
 
 ### Suggested Heuristics (please add)
+- [X] Random
+- [X] Straight
 - [X] move to food
 - [ ] move to center
 - [ ] lay traps
@@ -23,6 +32,7 @@ These are the core of this logic, the better the heuristics the better the snake
 - [ ] move away other snake's head
 - [ ] move to other snake's tail
 - [ ] move away other snake's tail
+- [ ] Stick to walls
 
 ## Repetition
 Iterating on these snakes should give us better and better snake... profit?

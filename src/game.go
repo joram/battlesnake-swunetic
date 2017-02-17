@@ -7,24 +7,24 @@ import (
 
 func NewGame(numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
-		Food:   []Point{},
+		Food:   [][]int{},
 		GameId: "the one and only game atm",
 		Height: 20,
 		Width:  20,
 		Turn:   0,
-		Snakes: []Snake{},
+		Snakes: []MoveRequestSnake{},
 		You:    "",
 	}
 
 	for i := 0; i < numSnakes; i += 1 {
-		snake := Snake{
+		snake := MoveRequestSnake{
 			Id:    fmt.Sprintf("Snake-%v", i),
 			Name:  fmt.Sprintf("Snake-%v", i),
 			Taunt: "poop",
-			Coords: []Point{
-				Point{X: i, Y: i},
-				Point{X: i, Y: i},
-				Point{X: i, Y: i},
+			Coords: [][]int{
+				[]int{i, i},
+				[]int{i, i},
+				[]int{i, i},
 			},
 			HealthPoints: 100,
 		}
