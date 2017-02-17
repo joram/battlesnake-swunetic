@@ -14,17 +14,18 @@ type GameStartResponse struct {
 }
 
 type MoveRequest struct {
-	Food   []Point `json:"food"`
-	GameId string  `json:"game_id"`
-	Height int     `json:"height"`
-	Width  int     `json:"width"`
-	Turn   int     `json:"turn"`
-	Snakes []Snake `json:"snakes"`
-	You    string  `json:"you"`
+	RawFood [][]int `json:"food"`
+	Food    []Point
+	GameId  string  `json:"game_id"`
+	Height  int     `json:"height"`
+	Width   int     `json:"width"`
+	Turn    int     `json:"turn"`
+	Snakes  []Snake `json:"snakes"`
+	You     string  `json:"you"`
 }
 
 type MoveResponse struct {
-	Move  string  `json:"Move"`
+	Move  string  `json:"move"`
 	Taunt *string `json:"taunt,omitempty"`
 }
 
@@ -68,16 +69,17 @@ type BoardCell struct {
 
 type Vector Point
 type Point struct {
-	X int `json:"x"`
-	Y int `json:"y"`
+	X int
+	Y int
 }
 
 type Snake struct {
-	Coords       []Point `json:"coords"`
-	HealthPoints int     `json:"health_points"`
-	Id           string  `json:"id"`
-	Name         string  `json:"name"`
-	Taunt        string  `json:"taunt"`
+	RawCoords    [][]int `json:"coords"`
+	Coords       []Point
+	HealthPoints int    `json:"health_points"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Taunt        string `json:"taunt"`
 }
 
 type WeightedDirection struct {

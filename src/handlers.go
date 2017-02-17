@@ -28,6 +28,7 @@ func move(w http.ResponseWriter, r *http.Request) {
 	var requestData MoveRequest
 	json.NewDecoder(r.Body).Decode(&requestData)
 	snake := NewHeuristicSnake(requestData.GameId)
+	requestData.HorribleJsonMassagingHack()
 	gameState := NewGameState(requestData)
 	responseData := MoveResponse{
 		Move: snake.Move(&gameState),

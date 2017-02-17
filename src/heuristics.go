@@ -9,6 +9,7 @@ import (
 func NearestFoodHeuristic(gameState *GameState) string {
 
 	var closestFood *Vector
+	var food Point
 
 	snake := gameState.MySnake()
 	head := snake.Coords[0]
@@ -16,8 +17,10 @@ func NearestFoodHeuristic(gameState *GameState) string {
 		test := getDistanceBetween(head, p)
 		if closestFood == nil {
 			closestFood = test
+			food = p
 		} else if test.Magnitude() < closestFood.Magnitude() {
 			closestFood = test
+			food = p
 		}
 	}
 
@@ -25,13 +28,16 @@ func NearestFoodHeuristic(gameState *GameState) string {
 		return NOOP
 	}
 
-	if closestFood.X < head.X && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
+	if head.Left().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
 		return LEFT
-	} else if closestFood.X > head.X && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
+	}
+	if head.Right().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
 		return RIGHT
-	} else if closestFood.Y < head.Y && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
+	}
+	if head.Up().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
 		return UP
-	} else if closestFood.Y > head.Y && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
+	}
+	if head.Down().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
 		return DOWN
 	}
 	return NOOP
@@ -55,7 +61,7 @@ func GoStraightHeuristic(gameState *GameState) string {
 
 	// try and go straight
 	for _, direction := range allDirections {
-		if directionOfMovement == directionVector(direction) {
+		if directionOfMovement.Equals(directionVector(direction)) {
 			possibleNewHead := head.Add(directionOfMovement)
 			if !gameState.IsSolid(possibleNewHead, mySnake.Id) {
 				return direction

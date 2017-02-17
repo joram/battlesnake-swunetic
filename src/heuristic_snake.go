@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/sendwithus/lib-go"
 	"math/rand"
@@ -11,6 +12,7 @@ import (
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
 	direction := h.MoveFunc(gameState)
 	h.Move = direction
+	fmt.Printf("%v votes %v[%v]\n", h.Name, h.Move, h.Weight)
 }
 
 func NewHeuristicSnake(id string) HeuristicSnake {
