@@ -29,6 +29,7 @@ These are the core of this logic, the better the heuristics the better the snake
 - move away other snake's head
 - move to other snake's tail
 - move away other snake's tail
+- stick to walls
 
 ## Repetition
 Iterating on these snakes should give us better and better snake... profit?
