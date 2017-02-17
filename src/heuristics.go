@@ -6,7 +6,7 @@ import (
 
 // NOTE: maybe split into multiple files if this gets too big
 
-func NearestFoodHeuristic(gameState *GameState) string {
+func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 
 	var closestFood *Vector
 	var food Point
@@ -25,30 +25,31 @@ func NearestFoodHeuristic(gameState *GameState) string {
 	}
 
 	if closestFood == nil {
-		return NOOP
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 	}
 
 	if head.Left().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
-		return LEFT
+		return []WeightedDirection{{Direction: LEFT, Weight: 50}}
 	}
 	if head.Right().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
-		return RIGHT
+		return []WeightedDirection{{Direction: RIGHT, Weight: 50}}
 	}
 	if head.Up().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
-		return UP
+		return []WeightedDirection{{Direction: UP, Weight: 50}}
 	}
 	if head.Down().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
-		return DOWN
+		return []WeightedDirection{{Direction: DOWN, Weight: 50}}
 	}
-	return NOOP
+
+	return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 }
 
-func GoStraightHeuristic(gameState *GameState) string {
+func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 
 	mySnake := gameState.MySnake()
 
 	if len(mySnake.Coords) <= 1 {
-		return NOOP
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 	}
 
 	head := mySnake.Coords[0]
@@ -64,14 +65,14 @@ func GoStraightHeuristic(gameState *GameState) string {
 		if directionOfMovement.Equals(directionVector(direction)) {
 			possibleNewHead := head.Add(directionOfMovement)
 			if !gameState.IsSolid(possibleNewHead, mySnake.Id) {
-				return direction
+				return []WeightedDirection{{Direction: direction, Weight: 50}}
 			}
 		}
 	}
-	return NOOP
+	return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 }
 
-func RandomHeuristic(gameState *GameState) string {
+func RandomHeuristic(gameState *GameState) WeightedDirections {
 
 	mySnake := gameState.MySnake()
 	head := mySnake.Coords[0]
@@ -87,9 +88,9 @@ func RandomHeuristic(gameState *GameState) string {
 	}
 
 	if len(validDirections) == 0 {
-		return NOOP
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 	}
 
 	i := rand.Int() % len(validDirections)
-	return validDirections[i]
+	return []WeightedDirection{{Direction: validDirections[i], Weight: 50}}
 }
