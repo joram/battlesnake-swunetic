@@ -1,6 +1,13 @@
 # battlesnake-swunetic
 Genetically training weight of snake heuristics
 
+# Setup
+run `swu services start` to get the game server running http://localhost:4000
+
+run `swu run` to build and run the snake server at http://localhost:9000
+
+*NOTE:* when you put your snake url in to the game server, it needs to be your public IP not localhost.
+
 # Overview
 
 ## Comparing Snakes

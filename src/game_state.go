@@ -5,24 +5,48 @@ import (
 	"math/rand"
 )
 
-func NewGameState(moveRequest MoveRequest) GameState {
+func NewGameState(mr MoveRequest) GameState {
 
 	heuristicSnakes := []HeuristicSnake{}
-	for _, snake := range moveRequest.Snakes {
+	for _, snake := range mr.Snakes {
 		heuristicSnakes = append(heuristicSnakes, NewHeuristicSnake(snake.Id))
+	}
+
+	snakes := []Snake{}
+	for _, snake := range mr.Snakes {
+		body := []Point{}
+		for _, coord := range snake.Coords {
+			part := Point{X: coord[0], Y: coord[1]}
+			body = append(body, part)
+		}
+		snakes = append(snakes, Snake{
+			Coords:       body,
+			HealthPoints: snake.HealthPoints,
+			Id:           snake.Id,
+			Name:         snake.Name,
+			Taunt:        snake.Taunt,
+		})
+	}
+
+	foods := []Point{}
+	for _, coord := range mr.Food {
+		food := Point{X: coord[0], Y: coord[1]}
+		foods = append(foods, food)
+
 	}
 
 	return GameState{
 		HeuristicSnakes: heuristicSnakes,
-		Snakes:          moveRequest.Snakes,
-		Width:           moveRequest.Width,
-		Height:          moveRequest.Height,
-		Turn:            moveRequest.Turn,
-		Food:            moveRequest.Food,
+		Snakes:          snakes,
+		Width:           mr.Width,
+		Height:          mr.Height,
+		Turn:            mr.Turn,
+		Food:            foods,
 		winners:         []HeuristicSnake{},
 		state:           "running",
-		You:             moveRequest.You,
+		You:             mr.You,
 	}
+
 }
 
 func (gameState *GameState) MySnake() *Snake {
