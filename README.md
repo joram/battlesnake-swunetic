@@ -21,15 +21,18 @@ A certain amount of random varience will be introduced as well. This second gene
 These are the core of this logic, the better the heuristics the better the snake can be. A heuristic is just a simple function that takes a game board and returns a direction.
 
 ### Suggested Heuristics (please add)
-- move to food
-- move to center
-- move away from center (towards edge)
-- move to increase board control
-- move to other snake's head
-- move away other snake's head
-- move to other snake's tail
-- move away other snake's tail
-- stick to walls
+- [X] Random
+- [X] Straight
+- [X] move to food
+- [ ] move to center
+- [ ] lay traps
+- [ ] move away from center (towards edge)
+- [ ] move to increase board control
+- [ ] move to other snake's head
+- [ ] move away other snake's head
+- [ ] move to other snake's tail
+- [ ] move away other snake's tail
+- [ ] Stick to walls
 
 ## Repetition
 Iterating on these snakes should give us better and better snake... profit?
