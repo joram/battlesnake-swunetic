@@ -15,14 +15,14 @@ These are the core of this logic, the better the heuristics the better the snake
 
 ### Suggested Heuristics (please add)
 - [X] move to food
-- [] move to center
-- [] lay traps
-- [] move away from center (towards edge)
-- [] move to increase board control
-- [] move to other snake's head
-- [] move away other snake's head
-- [] move to other snake's tail
-- [] move away other snake's tail
+- [ ] move to center
+- [ ] lay traps
+- [ ] move away from center (towards edge)
+- [ ] move to increase board control
+- [ ] move to other snake's head
+- [ ] move away other snake's head
+- [ ] move to other snake's tail
+- [ ] move away other snake's tail
 
 ## Repetition
 Iterating on these snakes should give us better and better snake... profit?
