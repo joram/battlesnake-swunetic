@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 )
 
@@ -93,4 +94,59 @@ func RandomHeuristic(gameState *GameState) WeightedDirections {
 
 	i := rand.Int() % len(validDirections)
 	return []WeightedDirection{{Direction: validDirections[i], Weight: 50}}
+}
+
+func BoardControl(gameState *GameState, start *Point) float64 {
+	if !gameState.IsEmpty(*start) {
+		return float64(0)
+	}
+	toVisit := []*Point{start}
+	haveVisited := []*Point{}
+	for len(toVisit) > 0 {
+		p := toVisit[len(toVisit)-1]
+		toVisit = toVisit[:len(toVisit)-1]
+		haveVisited = append(haveVisited, p)
+		for _, neighbour := range p.Neighbours() {
+			if gameState.IsEmpty(*neighbour) {
+				shouldCheck := true
+
+				for _, visitedPoint := range haveVisited {
+					if visitedPoint.Equals(*neighbour) {
+						shouldCheck = false
+					}
+				}
+
+				for _, toVisitedPoint := range toVisit {
+					if toVisitedPoint.Equals(*neighbour) {
+						shouldCheck = false
+					}
+				}
+
+				if shouldCheck {
+					toVisit = append(toVisit, neighbour)
+				}
+			}
+		}
+	}
+	canVisit := float64(len(haveVisited))
+	return canVisit
+}
+
+func BoardControlHeuristic(gameState *GameState) WeightedDirections {
+	mySnake := gameState.MySnake()
+	head := mySnake.Coords[0]
+	controlLeft := BoardControl(gameState, head.Left())
+	controlRight := BoardControl(gameState, head.Right())
+	controlUp := BoardControl(gameState, head.Up())
+	controlDown := BoardControl(gameState, head.Down())
+	maxControl := math.Max(controlLeft, math.Max(controlRight, math.Max(controlUp, controlDown)))
+
+	weightedDirections := []WeightedDirection{
+		{Weight: int(controlLeft / maxControl * 100), Direction: LEFT},
+		{Weight: int(controlRight / maxControl * 100), Direction: RIGHT},
+		{Weight: int(controlUp / maxControl * 100), Direction: UP},
+		{Weight: int(controlDown / maxControl * 100), Direction: DOWN},
+	}
+
+	return weightedDirections
 }

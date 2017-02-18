@@ -22,6 +22,7 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 		"nearest-food": NearestFoodHeuristic,
 		"straight":     GoStraightHeuristic,
 		"random":       RandomHeuristic,
+		"control":      BoardControlHeuristic,
 	}
 
 	for name, heuristic := range heuristics {
@@ -36,6 +37,22 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 }
 
 func getWeight(name string) int {
+	if name == "nearest-food" {
+		return 100
+	}
+	if name == "control" {
+		return 100
+	}
+	if name == "straight" {
+		return 20
+	}
+	if name == "random" {
+		return 20
+	}
+	return 50
+}
+
+func getWeight____(name string) int {
 	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
 	if err != nil {
 		panic(err)
@@ -81,12 +98,10 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 	go sortWeightsMap(weights, ch)
 
 	for weightedDirection := range ch {
-		head := gameState.MySnake().Coords[0]
-		directionOfMovement := directionVector(weightedDirection.Direction)
-		possibleNewHead := head.Add(directionOfMovement)
-		if !gameState.IsSolid(possibleNewHead, snake.Id) {
-			return weightedDirection.Direction
-		}
+		//head := gameState.MySnake().Coords[0]
+		//directionOfMovement := directionVector(weightedDirection.Direction)
+		//possibleNewHead := head.Add(directionOfMovement)
+		return weightedDirection.Direction
 	}
 
 	return NOOP

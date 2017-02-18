@@ -21,5 +21,8 @@ func directionVector(direction string) Point {
 	if direction == RIGHT {
 		return Point{X: 1, Y: 0}
 	}
+	if direction == NOOP {
+		return Point{X: 0, Y: 0}
+	}
 	panic(fmt.Sprintf("invalid direction '%v'", direction))
 }
