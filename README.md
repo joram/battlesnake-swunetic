@@ -24,10 +24,10 @@ These are the core of this logic, the better the heuristics the better the snake
 - [X] Random
 - [X] Straight
 - [X] move to food
+- [ ] move to increase board control
 - [ ] move to center
 - [ ] lay traps
 - [ ] move away from center (towards edge)
-- [ ] move to increase board control
 - [ ] move to other snake's head
 - [ ] move away other snake's head
 - [ ] move to other snake's tail

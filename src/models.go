@@ -54,13 +54,13 @@ type GameState struct {
 	You             string
 }
 
-type MoveHeuristic func(gameState *GameState) string
+type MoveHeuristic func(gameState *GameState) WeightedDirections
 
 type WeightedHeuristic struct {
-	Weight   int
-	Move     string
-	Name     string
-	MoveFunc MoveHeuristic
+	Weight             int
+	WeightedDirections WeightedDirections
+	Name               string
+	MoveFunc           MoveHeuristic
 }
 
 type HeuristicSnake struct {
