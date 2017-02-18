@@ -164,6 +164,10 @@ func (gameState *GameState) FoodAt(p *Point) bool {
 	return false
 }
 
+func (gameState *GameState) IsEmpty(point Point) bool {
+	return !gameState.IsSolid(point, "")
+}
+
 func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
 	if point.X < 0 || point.X >= gameState.Width {
 		return true

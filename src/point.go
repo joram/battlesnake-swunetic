@@ -25,6 +25,15 @@ func (p *Point) Down() *Point {
 	return &Point{X: p.X, Y: p.Y + 1}
 }
 
+func (p *Point) Neighbours() []*Point {
+	return []*Point{
+		p.Up(),
+		p.Down(),
+		p.Left(),
+		p.Right(),
+	}
+}
+
 func (p *Point) Equals(p2 Point) bool {
 	return p.X == p2.X && p.Y == p2.Y
 }

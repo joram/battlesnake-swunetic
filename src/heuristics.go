@@ -1,12 +1,13 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 )
 
 // NOTE: maybe split into multiple files if this gets too big
 
-func NearestFoodHeuristic(gameState *GameState) string {
+func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 
 	var closestFood *Vector
 	var food Point
@@ -25,22 +26,23 @@ func NearestFoodHeuristic(gameState *GameState) string {
 	}
 
 	if closestFood == nil {
-		return NOOP
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 	}
 
 	if head.Left().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
-		return LEFT
+		return []WeightedDirection{{Direction: LEFT, Weight: 100 - snake.HealthPoints}}
 	}
 	if head.Right().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
-		return RIGHT
+		return []WeightedDirection{{Direction: RIGHT, Weight: 100 - snake.HealthPoints}}
 	}
 	if head.Up().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
-		return UP
+		return []WeightedDirection{{Direction: UP, Weight: 100 - snake.HealthPoints}}
 	}
 	if head.Down().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
-		return DOWN
+		return []WeightedDirection{{Direction: DOWN, Weight: 100 - snake.HealthPoints}}
 	}
-	return NOOP
+
+	return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 }
 
 func GoStraightHeuristic(gameState *GameState) string {
@@ -92,4 +94,59 @@ func RandomHeuristic(gameState *GameState) string {
 
 	i := rand.Int() % len(validDirections)
 	return validDirections[i]
+}
+
+func BoardControl(gameState *GameState, start *Point) float64 {
+	if !gameState.IsEmpty(*start) {
+		return float64(0)
+	}
+	toVisit := []*Point{start}
+	haveVisited := []*Point{}
+	for len(toVisit) > 0 {
+		p := toVisit[len(toVisit)-1]
+		toVisit = toVisit[:len(toVisit)-1]
+		haveVisited = append(haveVisited, p)
+		for _, neighbour := range p.Neighbours() {
+			if gameState.IsEmpty(*neighbour) {
+				shouldCheck := true
+
+				for _, visitedPoint := range haveVisited {
+					if visitedPoint.Equals(*neighbour) {
+						shouldCheck = false
+					}
+				}
+
+				for _, toVisitedPoint := range toVisit {
+					if toVisitedPoint.Equals(*neighbour) {
+						shouldCheck = false
+					}
+				}
+
+				if shouldCheck {
+					toVisit = append(toVisit, neighbour)
+				}
+			}
+		}
+	}
+	canVisit := float64(len(haveVisited))
+	return canVisit
+}
+
+func BoardControlHeuristic(gameState *GameState) WeightedDirections {
+	mySnake := gameState.MySnake()
+	head := mySnake.Coords[0]
+	controlLeft := BoardControl(gameState, head.Left())
+	controlRight := BoardControl(gameState, head.Right())
+	controlUp := BoardControl(gameState, head.Up())
+	controlDown := BoardControl(gameState, head.Down())
+	maxControl := math.Max(controlLeft, math.Max(controlRight, math.Max(controlUp, controlDown)))
+
+	weightedDirections := []WeightedDirection{
+		{Weight: int(controlLeft / maxControl * 100), Direction: LEFT},
+		{Weight: int(controlRight / maxControl * 100), Direction: RIGHT},
+		{Weight: int(controlUp / maxControl * 100), Direction: UP},
+		{Weight: int(controlDown / maxControl * 100), Direction: DOWN},
+	}
+
+	return weightedDirections
 }
