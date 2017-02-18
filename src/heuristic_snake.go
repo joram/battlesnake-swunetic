@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/sendwithus/lib-go"
 	"math/rand"
@@ -10,9 +9,7 @@ import (
 )
 
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
-	direction := h.MoveFunc(gameState)
-	h.Move = direction
-	fmt.Printf("%v votes %v[%v]\n", h.Name, h.Move, h.Weight)
+	h.WeightedDirections = h.MoveFunc(gameState)
 }
 
 func NewHeuristicSnake(id string) HeuristicSnake {
@@ -32,7 +29,6 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 		weightedHeuristic := &WeightedHeuristic{
 			Weight:   getWeight(name),
 			MoveFunc: heuristic,
-			Move:     NOOP,
 			Name:     name,
 		}
 		snake.WeightedHeuristics = append(snake.WeightedHeuristics, weightedHeuristic)
@@ -92,7 +88,9 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 		NOOP:  0,
 	}
 	for _, wh := range snake.WeightedHeuristics {
-		weights[wh.Move] += wh.Weight
+		for _, wd := range wh.WeightedDirections {
+			weights[wd.Direction] += wd.Weight * wh.Weight
+		}
 	}
 	weights[NOOP] = 0
 
