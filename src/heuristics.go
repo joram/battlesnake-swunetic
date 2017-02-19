@@ -8,41 +8,40 @@ import (
 // NOTE: maybe split into multiple files if this gets too big
 
 func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
-
-	var closestFood *Vector
-	var food Point
-
+	WeightUp := 0
+	WeightDown := 0
+	WeightLeft := 0
+	WeightRight := 0
 	snake := gameState.MySnake()
 	head := snake.Coords[0]
-	for _, p := range gameState.Food {
-		test := getDistanceBetween(head, p)
-		if closestFood == nil {
-			closestFood = test
-			food = p
-		} else if test.Magnitude() < closestFood.Magnitude() {
-			closestFood = test
-			food = p
+	foods := []*Point{}
+	for _, food := range gameState.Food {
+		foods = append(foods, &food)
+	}
+	pathCalc := NewPathCalculation(&head, foods, gameState)
+	pathCalc.Run()
+	paths := pathCalc.Paths()
+	for _, path := range paths {
+		direction := path[len(path)-2].Subtract(head)
+		if direction == directionVector(UP) {
+			WeightUp += 25
+		}
+		if direction == directionVector(DOWN) {
+			WeightDown += 25
+		}
+		if direction == directionVector(LEFT) {
+			WeightLeft += 25
+		}
+		if direction == directionVector(RIGHT) {
+			WeightRight += 25
 		}
 	}
-
-	if closestFood == nil {
-		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
+	return []WeightedDirection{
+		{Direction: UP, Weight: WeightUp},
+		{Direction: DOWN, Weight: WeightDown},
+		{Direction: LEFT, Weight: WeightLeft},
+		{Direction: RIGHT, Weight: WeightRight},
 	}
-
-	if head.Left().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(LEFT)), snake.Id) {
-		return []WeightedDirection{{Direction: LEFT, Weight: 50}}
-	}
-	if head.Right().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(RIGHT)), snake.Id) {
-		return []WeightedDirection{{Direction: RIGHT, Weight: 50}}
-	}
-	if head.Up().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(UP)), snake.Id) {
-		return []WeightedDirection{{Direction: UP, Weight: 50}}
-	}
-	if head.Down().isCloser(&head, &food) && !gameState.IsSolid(head.Add(directionVector(DOWN)), snake.Id) {
-		return []WeightedDirection{{Direction: DOWN, Weight: 50}}
-	}
-
-	return []WeightedDirection{{Direction: NOOP, Weight: 0}}
 }
 
 func GoStraightHeuristic(gameState *GameState) WeightedDirections {

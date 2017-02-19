@@ -168,6 +168,54 @@ func (gameState *GameState) IsEmpty(point Point) bool {
 	return !gameState.IsSolid(point, "")
 }
 
+func (gameState *GameState) ShortestPathsToFood(from *Point) [][]*Point {
+	paths := [][]*Point{}
+	for _, food := range gameState.Food {
+		println("finding shortest path to food")
+		path := gameState.shortestPathTo(from, &food, []*Point{})
+		println("found shortest path to food")
+		paths = append(paths, path)
+	}
+	return paths
+}
+
+func (gameState *GameState) shortestPathTo(from *Point, to *Point, haveVisited []*Point) []*Point {
+
+	if from.Equals(*to) {
+		return []*Point{}
+	}
+
+	options := [][]*Point{}
+	haveVisited = append(haveVisited, from)
+	for _, neighbour := range from.Neighbours() {
+		if gameState.IsEmpty(*neighbour) {
+			visited := false
+			for _, visitedPoint := range haveVisited {
+				if visitedPoint.Equals(*neighbour) {
+					visited = true
+					break
+				}
+			}
+			if !visited {
+				pathFromNeighbour := gameState.shortestPathTo(neighbour, to, haveVisited)
+				if pathFromNeighbour != nil {
+					options = append(options, pathFromNeighbour)
+				}
+			}
+
+		}
+	}
+
+	var shortestOption []*Point
+	for _, option := range options {
+		if shortestOption == nil || len(option) < len(shortestOption) {
+			shortestOption = option
+		}
+	}
+
+	return append(shortestOption, from)
+}
+
 func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
 	if point.X < 0 || point.X >= gameState.Width {
 		return true
