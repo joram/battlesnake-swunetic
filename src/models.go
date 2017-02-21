@@ -57,10 +57,10 @@ type GameState struct {
 type MoveHeuristic func(gameState *GameState) WeightedDirections
 
 type WeightedHeuristic struct {
-	Weight             int
-	WeightedDirections WeightedDirections
-	Name               string
-	MoveFunc           MoveHeuristic
+	Weight             int                `json:"weight"`
+	WeightedDirections WeightedDirections `json:"weighted_directions"`
+	Name               string             `json:"name"`
+	MoveFunc           MoveHeuristic      `json:"-"`
 }
 
 type HeuristicSnake struct {

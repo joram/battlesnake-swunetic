@@ -1,3 +1,4 @@
 #!/bin/bash
 
+docker stop battle_snake
 docker run -d -p 4000:4000 stembolt/battle_snake
