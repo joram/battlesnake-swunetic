@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
+	"github.com/sendwithus/lib-go"
 	"log"
 	"net/http"
 	"os"
@@ -52,9 +54,35 @@ func Train(numSnakes, numGamesPerGeneration int) {
 			s += fmt.Sprint("%v:%v\t", snake.Id, gamesWon[snake.Id])
 		}
 	}
+
+	bestWeights := BestWeights(gamesWon, trainingSnakes)
+	StoreWeights(bestWeights)
+	fmt.Printf("NEW BEST: %v", bestWeights)
+}
+
+func BestWeights(gamesWon map[string]int, snakes []HeuristicSnake) map[string]int {
+	weights := make(map[string]int)
+	for _, weightedHeuristic := range snakes[0].WeightedHeuristics {
+		// TODO: DO this properly, not just picking the first
+		weights[weightedHeuristic.Name] = weightedHeuristic.Weight
+	}
+	return weights
+}
+
+func StoreWeights(weights map[string]int) {
+	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	for name, weight := range weights {
+		c.Do("SET", name, weight)
+	}
 }
 
 func MutateSnakes(snakes []HeuristicSnake) []HeuristicSnake {
+
 	mutationAmount := []int{0, 5, 10, 15, 20, 20, 20, 20, 20, 20, 20, 20}
 
 	for i := 0; i < len(snakes); i++ {
