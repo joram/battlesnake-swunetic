@@ -53,6 +53,15 @@ func (p *Point) String() string {
 	return fmt.Sprintf("{x:%v, y:%v}", p.X, p.Y)
 }
 
+func StringPoints(points []Point) string {
+	s := ""
+	for _, p := range points {
+		s += ", "
+		s += p.string()
+	}
+	return s
+}
+
 func (p *Point) isCloser(p2 *Point, goal *Point) bool {
 	dist1 := getDistanceBetween(*p, *goal).Magnitude()
 	dist2 := getDistanceBetween(*p2, *goal).Magnitude()

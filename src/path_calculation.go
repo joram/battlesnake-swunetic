@@ -20,11 +20,13 @@ func (pc *PathCalculation) isAGoal(p *Point) bool {
 }
 
 func (pc *PathCalculation) removeGoal(p *Point) {
-	for i, goal := range pc.goals {
-		if goal.Equals(*p) {
-			pc.goals = append(pc.goals[:i], pc.goals[i+1:]...) // remove goal
+	newGoals := Points{}
+	for _, goal := range pc.goals {
+		if !goal.Equals(*p) {
+			newGoals = append(newGoals, goal)
 		}
 	}
+	pc.goals = newGoals
 }
 
 func (pc *PathCalculation) haveVisited(p *Point) bool {

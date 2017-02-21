@@ -60,7 +60,7 @@ type WeightedHeuristic struct {
 	Weight             int
 	WeightedDirections WeightedDirections
 	Name               string
-	MoveFunc           MoveHeuristic
+	MoveFunc           MoveHeuristic `json:"-"`
 }
 
 type HeuristicSnake struct {

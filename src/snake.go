@@ -3,11 +3,7 @@ package main
 func (snake *Snake) Extend(direction string) Point {
 	curHead := snake.Coords[0]
 	newHead := curHead.Add(directionVector(direction))
-	newCoords := []Point{newHead}
-	for _, coord := range snake.Coords {
-		newCoords = append(newCoords, coord)
-	}
-	snake.Coords = newCoords
+	snake.Coords = append([]Point{newHead}, snake.Coords...)
 	return newHead
 }
 

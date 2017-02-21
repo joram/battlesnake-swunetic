@@ -17,14 +17,16 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	}
 
 	for i := 0; i < numSnakes; i += 1 {
+		x := rand.Intn(initialMoveRequest.Width)
+		y := rand.Intn(initialMoveRequest.Height)
 		snake := MoveRequestSnake{
 			Id:    fmt.Sprintf("Snake-%v", i),
 			Name:  fmt.Sprintf("Snake-%v", i),
 			Taunt: "poop",
 			Coords: [][]int{
-				[]int{i, i},
-				[]int{i, i},
-				[]int{i, i},
+				{x, y},
+				{x, y},
+				{x, y},
 			},
 			HealthPoints: 100,
 		}
@@ -32,6 +34,10 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	}
 
 	initialGameState := NewGameState(initialMoveRequest)
+	for i := 0; i < foodFrequency; i++ {
+		initialGameState.SpawnFood()
+	}
+
 	return &Game{
 		currentGameState: &initialGameState,
 		foodFrequency:    foodFrequency,
@@ -42,19 +48,12 @@ func (game *Game) Run() []HeuristicSnake {
 	for {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
-		if game.ShouldSpawnFood() {
-			println("spawning food")
-			game.currentGameState.SpawnFood()
-		}
 		if game.currentGameState.state != "running" {
 			break
 		}
 	}
 	game.Print()
 	return game.currentGameState.winners
-}
-func (game *Game) ShouldSpawnFood() bool {
-	return rand.Intn(game.foodFrequency) == 1
 }
 
 func (game *Game) Print() {
