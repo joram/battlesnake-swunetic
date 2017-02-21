@@ -42,15 +42,15 @@ type Game struct {
 }
 
 type GameState struct {
-	HeuristicSnakes []HeuristicSnake
-	Snakes          []Snake
+	HeuristicSnakes []*HeuristicSnake
+	Snakes          []*Snake
 	Height          int
 	Width           int
 	Turn            int
 	Food            []Point
 	state           string
-	winners         []HeuristicSnake
-	losers          []HeuristicSnake
+	winners         []*HeuristicSnake
+	losers          []*HeuristicSnake
 	You             string
 }
 
@@ -60,7 +60,7 @@ type WeightedHeuristic struct {
 	Weight             int
 	WeightedDirections WeightedDirections
 	Name               string
-	MoveFunc           MoveHeuristic
+	MoveFunc           MoveHeuristic `json:"-"`
 }
 
 type HeuristicSnake struct {
