@@ -9,6 +9,17 @@ func (p *Point) Add(p2 Point) Point {
 	}
 }
 
+func (p *Point) Subtract(p2 Point) Point {
+	return Point{
+		X: p.X - p2.X,
+		Y: p.Y - p2.Y,
+	}
+}
+
+func (p *Point) string() string {
+	return fmt.Sprintf("(%v,%v)", p.X, p.Y)
+}
+
 func (p *Point) Left() *Point {
 	return &Point{X: p.X - 1, Y: p.Y}
 }

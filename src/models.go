@@ -69,10 +69,24 @@ type HeuristicSnake struct {
 	DiedOnTurn         int
 }
 
+type Points []*Point
 type Vector Point
 type Point struct {
 	X int
 	Y int
+}
+type PointPair struct {
+	from *Point
+	to   *Point
+}
+
+type PathCalculation struct {
+	start         *Point
+	goals         Points
+	achievedGoals Points
+	visited       []PointPair
+	toVisit       Points
+	gameState     *GameState
 }
 
 type Snake struct {
