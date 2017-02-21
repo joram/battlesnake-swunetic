@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 func NewGame(numSnakes int, foodFrequency int) *Game {
@@ -44,7 +45,8 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	}
 }
 
-func (game *Game) Run() []HeuristicSnake {
+func (game *Game) Run() []*HeuristicSnake {
+	start := time.Now()
 	for {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
@@ -52,6 +54,7 @@ func (game *Game) Run() []HeuristicSnake {
 			break
 		}
 	}
+	fmt.Printf("simulation took: %v\n", time.Since(start))
 	game.Print()
 	return game.currentGameState.winners
 }

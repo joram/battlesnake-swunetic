@@ -9,19 +9,20 @@ import (
 
 func NewGameState(mr MoveRequest) GameState {
 
-	heuristicSnakes := []HeuristicSnake{}
+	heuristicSnakes := []*HeuristicSnake{}
 	for _, snake := range mr.Snakes {
-		heuristicSnakes = append(heuristicSnakes, NewHeuristicSnake(snake.Id))
+		heuristicSnake := NewHeuristicSnake(snake.Id)
+		heuristicSnakes = append(heuristicSnakes, &heuristicSnake)
 	}
 
-	snakes := []Snake{}
+	snakes := []*Snake{}
 	for _, snake := range mr.Snakes {
 		body := []Point{}
 		for _, coord := range snake.Coords {
 			part := Point{X: coord[0], Y: coord[1]}
 			body = append(body, part)
 		}
-		snakes = append(snakes, Snake{
+		snakes = append(snakes, &Snake{
 			Coords:       body,
 			HealthPoints: snake.HealthPoints,
 			Id:           snake.Id,
@@ -44,7 +45,7 @@ func NewGameState(mr MoveRequest) GameState {
 		Height:          mr.Height,
 		Turn:            mr.Turn,
 		Food:            foods,
-		winners:         []HeuristicSnake{},
+		winners:         []*HeuristicSnake{},
 		state:           "running",
 		You:             mr.You,
 	}
@@ -52,7 +53,7 @@ func NewGameState(mr MoveRequest) GameState {
 }
 
 func (gameState *GameState) MySnake() *Snake {
-	snake, _ := gameState.GetSnake(gameState.You)
+	snake := gameState.GetSnake(gameState.You)
 	return snake
 }
 
@@ -87,25 +88,24 @@ func (gameState *GameState) NextGameState() *GameState {
 
 	// extend all snakes
 	newHeads := map[string]Point{}
-	for i := 0; i < len(nextGameState.Snakes); i++ {
-		snake := nextGameState.Snakes[i]
+	for _, snake := range nextGameState.Snakes {
 		direction := moveDirections[snake.Id]
-		newHead := nextGameState.Snakes[i].Extend(direction)
+		newHead := snake.Extend(direction)
 		newHeads[snake.Id] = newHead
 	}
 
 	// eat or shrink
 	foodEaten := []Point{}
 	for snakeId, newHead := range newHeads {
-		snake, i := nextGameState.GetSnake(snakeId)
+		snake := nextGameState.GetSnake(snakeId)
 		if nextGameState.FoodAt(&newHead) {
 			foodEaten = append(foodEaten, newHead)
-			nextGameState.Snakes[i].HealthPoints = 100
+			snake.HealthPoints = 100
 		} else {
-			nextGameState.Snakes[i].HealthPoints -= 1
-			nextGameState.Snakes[i].Coords = nextGameState.Snakes[i].Coords[0 : len(snake.Coords)-1]
+			snake.HealthPoints -= 1
+			snake.Coords = snake.Coords[0 : len(snake.Coords)-1]
 		}
-		if nextGameState.Snakes[i].HealthPoints <= 0 {
+		if snake.HealthPoints <= 0 {
 			nextGameState.KillSnake(snakeId)
 		}
 	}
@@ -134,18 +134,18 @@ func (gameState *GameState) NextGameState() *GameState {
 
 	// check win/draw states
 	numSnakes := len(nextGameState.Snakes)
-	//if numSnakes == 1 {
-	//	nextGameState.state = "Won"
-	//	nextGameState.winners = []HeuristicSnake{
-	//		*nextGameState.GetHeuristicSnake(nextGameState.Snakes[0].Id),
-	//	}
-	//}
+	if numSnakes == 1 {
+		nextGameState.state = "Won"
+		nextGameState.winners = []*HeuristicSnake{
+			nextGameState.GetHeuristicSnake(nextGameState.Snakes[0].Id),
+		}
+	}
 	if numSnakes == 0 {
 		nextGameState.state = "Draw"
-		nextGameState.winners = []HeuristicSnake{}
+		nextGameState.winners = []*HeuristicSnake{}
 		for _, snake := range gameState.Snakes {
 			heuristicSnake := gameState.GetHeuristicSnake(snake.Id)
-			nextGameState.winners = append(nextGameState.winners, *heuristicSnake)
+			nextGameState.winners = append(nextGameState.winners, heuristicSnake)
 		}
 	}
 
@@ -255,7 +255,7 @@ func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
 
 func (gameState *GameState) KillSnake(snakeId string) {
 	fmt.Printf("Killing snake %v\n", snakeId)
-	newSnakes := []Snake{}
+	newSnakes := []*Snake{}
 	for _, snake := range gameState.Snakes {
 		if snake.Id != snakeId {
 			newSnakes = append(newSnakes, snake)
@@ -264,19 +264,19 @@ func (gameState *GameState) KillSnake(snakeId string) {
 	gameState.Snakes = newSnakes
 }
 
-func (gameState *GameState) GetSnake(snakeId string) (*Snake, int) {
-	for i, snake := range gameState.Snakes {
+func (gameState *GameState) GetSnake(snakeId string) *Snake {
+	for _, snake := range gameState.Snakes {
 		if snake.Id == snakeId {
-			return &gameState.Snakes[i], i
+			return snake
 		}
 	}
-	return nil, -1
+	return nil
 }
 
 func (gameState *GameState) GetHeuristicSnake(snakeId string) *HeuristicSnake {
 	for i, snake := range gameState.HeuristicSnakes {
 		if snake.Id == snakeId {
-			return &gameState.HeuristicSnakes[i]
+			return gameState.HeuristicSnakes[i]
 		}
 	}
 	return nil
