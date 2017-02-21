@@ -16,10 +16,6 @@ func (p *Point) Subtract(p2 Point) Point {
 	}
 }
 
-func (p *Point) string() string {
-	return fmt.Sprintf("(%v,%v)", p.X, p.Y)
-}
-
 func (p *Point) Left() *Point {
 	return &Point{X: p.X - 1, Y: p.Y}
 }
@@ -50,7 +46,7 @@ func (p *Point) Equals(p2 Point) bool {
 }
 
 func (p *Point) String() string {
-	return fmt.Sprintf("{x:%v, y:%v}", p.X, p.Y)
+	return fmt.Sprintf("(%v,%v)", p.X, p.Y)
 }
 
 func (p *Point) isCloser(p2 *Point, goal *Point) bool {

@@ -22,7 +22,12 @@ func (pc *PathCalculation) isAGoal(p *Point) bool {
 func (pc *PathCalculation) removeGoal(p *Point) {
 	for i, goal := range pc.goals {
 		if goal.Equals(*p) {
-			pc.goals = append(pc.goals[:i], pc.goals[i+1:]...) // remove goal
+			first := pc.goals[:i]
+			last := Points{}
+			if len(pc.goals) > i {
+				last = pc.goals[i+1:]
+			}
+			pc.goals = append(first, last...) // remove goal
 		}
 	}
 }

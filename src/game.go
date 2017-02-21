@@ -7,7 +7,7 @@ import (
 
 func NewGame(numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
-		Food:   [][]int{},
+		Food:   [][]int{{5, 5}},
 		GameId: "the one and only game atm",
 		Height: 20,
 		Width:  20,
@@ -39,13 +39,9 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 }
 
 func (game *Game) Run() []HeuristicSnake {
-	for {
+	for true {
 		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
-		if game.ShouldSpawnFood() {
-			println("spawning food")
-			game.currentGameState.SpawnFood()
-		}
 		if game.currentGameState.state != "running" {
 			break
 		}
@@ -75,6 +71,6 @@ func (game *Game) Print() {
 			}
 			println(winnerDetails)
 		}
-
+		println(game.currentGameState.String())
 	}
 }

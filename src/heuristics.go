@@ -22,7 +22,7 @@ func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 	pathCalc.Run()
 	paths := pathCalc.Paths()
 	for _, path := range paths {
-		direction := path[len(path)-2].Subtract(head)
+		direction := path[len(path)-1].Subtract(head)
 		if direction == directionVector(UP) {
 			WeightUp += 25
 		}
