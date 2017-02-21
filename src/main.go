@@ -28,31 +28,28 @@ func main() {
 	} else {
 		log.Println("Simulate a game to train swunetics!")
 		for {
-			Train(4, 100)
-		} 
+			Train(2, 100)
+		}
 	}
 }
 
 func Train(numSnakes, numGamesPerGeneration int) {
-	game := NewGame(numSnakes, 1)
+	game := NewGame("", numSnakes, 1)
 	trainingSnakes := game.currentGameState.HeuristicSnakes
-	trainingSnakes = MutateSnakes(trainingSnakes)
+	MutateSnakes(trainingSnakes)
 	gamesWon := map[string]int{}
 	for _, snake := range trainingSnakes {
 		gamesWon[snake.Id] = 0
 	}
 
 	for i := 0; i < numGamesPerGeneration; i++ {
-		game := NewGame(len(trainingSnakes), 1)
+		game := NewGame(fmt.Sprintf("Game-%v", i), len(trainingSnakes), 1)
 		game.currentGameState.HeuristicSnakes = trainingSnakes
 		game.Run()
+		game.Print()
+
 		for _, winner := range game.currentGameState.winners {
 			gamesWon[winner.Id] += 1
-		}
-
-		s := ""
-		for _, snake := range trainingSnakes {
-			s += fmt.Sprint("%v:%v\t", snake.Id, gamesWon[snake.Id])
 		}
 	}
 
@@ -61,7 +58,7 @@ func Train(numSnakes, numGamesPerGeneration int) {
 	fmt.Printf("NEW BEST: %v", bestWeights)
 }
 
-func BestWeights(gamesWon map[string]int, snakes []HeuristicSnake) map[string]int {
+func BestWeights(gamesWon map[string]int, snakes []*HeuristicSnake) map[string]int {
 	weights := make(map[string]int)
 	for _, weightedHeuristic := range snakes[0].WeightedHeuristics {
 		// TODO: DO this properly, not just picking the first
@@ -79,15 +76,15 @@ func StoreWeights(weights map[string]int) {
 
 	for name, weight := range weights {
 		c.Do("SET", name, weight)
+		fmt.Printf("new best: %v:%v", name, weight)
 	}
 }
 
-func MutateSnakes(snakes []HeuristicSnake) []HeuristicSnake {
+func MutateSnakes(snakes []*HeuristicSnake) {
 
-	mutationAmount := []int{0, 5, 10, 15, 20, 20, 20, 20, 20, 20, 20, 20}
+	mutationAmount := []int{0, 2, 3, 20}
 
 	for i := 0; i < len(snakes); i++ {
 		snakes[i].Mutate(mutationAmount[i])
 	}
-	return snakes
 }

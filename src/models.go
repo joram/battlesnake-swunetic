@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type GameStartRequest struct {
 	GameId string `json:"game_id"`
 	Height int    `json:"height"`
@@ -39,18 +41,20 @@ type MoveResponse struct {
 type Game struct {
 	currentGameState *GameState
 	foodFrequency    int
+	duration         time.Duration
+	name             string
 }
 
 type GameState struct {
-	HeuristicSnakes []HeuristicSnake
-	Snakes          []Snake
+	HeuristicSnakes []*HeuristicSnake
+	Snakes          []*Snake
 	Height          int
 	Width           int
 	Turn            int
 	Food            []Point
 	state           string
-	winners         []HeuristicSnake
-	losers          []HeuristicSnake
+	winners         []*HeuristicSnake
+	losers          []*HeuristicSnake
 	You             string
 }
 
@@ -60,7 +64,7 @@ type WeightedHeuristic struct {
 	Weight             int
 	WeightedDirections WeightedDirections
 	Name               string
-	MoveFunc           MoveHeuristic
+	MoveFunc           MoveHeuristic `json:"-"`
 }
 
 type HeuristicSnake struct {

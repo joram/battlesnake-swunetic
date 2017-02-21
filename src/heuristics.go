@@ -13,6 +13,10 @@ func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 	WeightLeft := 0
 	WeightRight := 0
 	snake := gameState.MySnake()
+	if snake == nil {
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
+	}
+
 	head := snake.Coords[0]
 	foods := []*Point{}
 	for _, food := range gameState.Food {
@@ -22,7 +26,11 @@ func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 	pathCalc.Run()
 	paths := pathCalc.Paths()
 	for _, path := range paths {
-		direction := path[len(path)-2].Subtract(head)
+		i := len(path) - 2
+		if i < 0 {
+			i = 0
+		}
+		direction := path[i].Subtract(head)
 		if direction == directionVector(UP) {
 			WeightUp += 25
 		}
@@ -47,6 +55,9 @@ func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 
 	mySnake := gameState.MySnake()
+	if mySnake == nil {
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
+	}
 
 	if len(mySnake.Coords) <= 1 {
 		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
@@ -75,6 +86,10 @@ func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 func RandomHeuristic(gameState *GameState) WeightedDirections {
 
 	mySnake := gameState.MySnake()
+	if mySnake == nil {
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
+	}
+
 	head := mySnake.Coords[0]
 	allDirections := []string{UP, DOWN, LEFT, RIGHT}
 
@@ -133,6 +148,10 @@ func BoardControl(gameState *GameState, start *Point) float64 {
 
 func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 	mySnake := gameState.MySnake()
+	if mySnake == nil {
+		return []WeightedDirection{{Direction: NOOP, Weight: 0}}
+	}
+
 	head := mySnake.Coords[0]
 	controlLeft := BoardControl(gameState, head.Left())
 	controlRight := BoardControl(gameState, head.Right())

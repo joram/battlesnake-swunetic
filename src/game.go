@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
 
-func NewGame(numSnakes int, foodFrequency int) *Game {
+func NewGame(name string, numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   [][]int{},
 		GameId: "the one and only game atm",
@@ -17,14 +18,16 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	}
 
 	for i := 0; i < numSnakes; i += 1 {
+		x := rand.Intn(initialMoveRequest.Width)
+		y := rand.Intn(initialMoveRequest.Height)
 		snake := MoveRequestSnake{
 			Id:    fmt.Sprintf("Snake-%v", i),
 			Name:  fmt.Sprintf("Snake-%v", i),
 			Taunt: "poop",
 			Coords: [][]int{
-				[]int{i, i},
-				[]int{i, i},
-				[]int{i, i},
+				{x, y},
+				{x, y},
+				{x, y},
 			},
 			HealthPoints: 100,
 		}
@@ -32,49 +35,36 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	}
 
 	initialGameState := NewGameState(initialMoveRequest)
+	for i := 0; i < foodFrequency; i++ {
+		initialGameState.SpawnFood()
+	}
+
 	return &Game{
 		currentGameState: &initialGameState,
 		foodFrequency:    foodFrequency,
+		name:             name,
 	}
 }
 
-func (game *Game) Run() []HeuristicSnake {
+func (game *Game) Run() []*HeuristicSnake {
+	start := time.Now()
 	for {
-		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
-		if game.ShouldSpawnFood() {
-			println("spawning food")
-			game.currentGameState.SpawnFood()
-		}
 		if game.currentGameState.state != "running" {
 			break
 		}
 	}
-	game.Print()
+	game.duration = time.Since(start)
 	return game.currentGameState.winners
-}
-func (game *Game) ShouldSpawnFood() bool {
-	return rand.Intn(game.foodFrequency) == 1
 }
 
 func (game *Game) Print() {
 	if game.currentGameState.state != "running" {
-		fmt.Printf("Game over on turn %v\n", game.currentGameState.Turn)
-		for _, snake := range game.currentGameState.winners {
-			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
-			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
-			}
-			println(winnerDetails)
-		}
-
-		for _, snake := range game.currentGameState.losers {
-			winnerDetails := fmt.Sprintf("LOSER[%v] %v:\t", snake.DiedOnTurn, snake.Id)
-			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
-			}
-			println(winnerDetails)
-		}
-
+		fmt.Printf("Game name:%v  \tturn:%v  \twinners:%v\tduration:%v\n",
+			game.name,
+			game.currentGameState.Turn,
+			len(game.currentGameState.winners),
+			game.duration,
+		)
 	}
 }
