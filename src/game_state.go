@@ -260,6 +260,24 @@ func (gameState *GameState) KillSnake(snakeId string) {
 		}
 	}
 	gameState.Snakes = newSnakes
+
+	for _, snake := range gameState.HeuristicSnakes {
+		if snake.Id == snakeId {
+			snake.DiedOnTurn = gameState.Turn
+			gameState.losers = append(gameState.losers, snake)
+			break
+		}
+	}
+}
+
+func (gameState *GameState) MarkSnakeAsWinner(snakeId string) {
+	for _, snake := range gameState.HeuristicSnakes {
+		if snake.Id == snakeId {
+			snake.DiedOnTurn = gameState.Turn
+			gameState.winners = append(gameState.winners, snake)
+			break
+		}
+	}
 }
 
 func (gameState *GameState) GetSnake(snakeId string) *Snake {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/garyburd/redigo/redis"
-	"github.com/sendwithus/lib-go"
 	"math/rand"
 	"sort"
 	"sync"
@@ -46,36 +44,6 @@ func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
 		mutatedWeight := originalWeight + rand.Intn(maxMutation*2) - maxMutation // mutate between -x and +x
 		heuristicSnake.WeightedHeuristics[i].Weight = mutatedWeight
 	}
-}
-
-func getWeight(name string) int {
-	if name == "nearest-food" {
-		return 100
-	}
-	if name == "control" {
-		return 100
-	}
-	if name == "straight" {
-		return 20
-	}
-	if name == "random" {
-		return 20
-	}
-	return 50
-}
-
-func getWeight____(name string) int {
-	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
-	if err != nil {
-		panic(err)
-	}
-	defer c.Close()
-
-	weight, err := redis.Int(c.Do("GET", name))
-	if err != nil || weight == 0 {
-		weight = rand.Intn(50) // figure out a good starting Weight for a new heuristic
-	}
-	return weight
 }
 
 func (snake *HeuristicSnake) Move(gameState *GameState) string {
