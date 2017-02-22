@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func NewGame(numSnakes int, foodFrequency int) *Game {
+func NewGame(name string, numSnakes int, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   [][]int{},
 		GameId: "the one and only game atm",
@@ -42,41 +42,29 @@ func NewGame(numSnakes int, foodFrequency int) *Game {
 	return &Game{
 		currentGameState: &initialGameState,
 		foodFrequency:    foodFrequency,
+		name:             name,
 	}
 }
 
 func (game *Game) Run() []*HeuristicSnake {
 	start := time.Now()
 	for {
-		game.Print()
 		game.currentGameState = game.currentGameState.NextGameState()
 		if game.currentGameState.state != "running" {
 			break
 		}
 	}
-	fmt.Printf("simulation took: %v\n", time.Since(start))
-	game.Print()
+	game.duration = time.Since(start)
 	return game.currentGameState.winners
 }
 
 func (game *Game) Print() {
 	if game.currentGameState.state != "running" {
-		fmt.Printf("Game over on turn %v\n", game.currentGameState.Turn)
-		for _, snake := range game.currentGameState.winners {
-			winnerDetails := fmt.Sprintf("WINNER[%v] %v:\t", game.currentGameState.Turn, snake.Id)
-			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
-			}
-			println(winnerDetails)
-		}
-
-		for _, snake := range game.currentGameState.losers {
-			winnerDetails := fmt.Sprintf("LOSER[%v] %v:\t", snake.DiedOnTurn, snake.Id)
-			for _, w := range snake.WeightedHeuristics {
-				winnerDetails += fmt.Sprintf("%v:%v ", w.Name, w.Weight)
-			}
-			println(winnerDetails)
-		}
-
+		fmt.Printf("Game name:%v  \tturn:%v  \twinners:%v\tduration:%v\n",
+			game.name,
+			game.currentGameState.Turn,
+			len(game.currentGameState.winners),
+			game.duration,
+		)
 	}
 }

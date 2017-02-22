@@ -36,6 +36,18 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 	return snake
 }
 
+func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
+	if maxMutation <= 0 {
+		return
+	}
+
+	for i, _ := range heuristicSnake.WeightedHeuristics {
+		originalWeight := heuristicSnake.WeightedHeuristics[i].Weight
+		mutatedWeight := originalWeight + rand.Intn(maxMutation*2) - maxMutation // mutate between -x and +x
+		heuristicSnake.WeightedHeuristics[i].Weight = mutatedWeight
+	}
+}
+
 func getWeight(name string) int {
 	if name == "nearest-food" {
 		return 100

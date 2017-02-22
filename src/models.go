@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type GameStartRequest struct {
 	GameId string `json:"game_id"`
 	Height int    `json:"height"`
@@ -39,6 +41,8 @@ type MoveResponse struct {
 type Game struct {
 	currentGameState *GameState
 	foodFrequency    int
+	duration         time.Duration
+	name             string
 }
 
 type GameState struct {

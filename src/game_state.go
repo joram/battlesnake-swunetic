@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 )
@@ -254,7 +253,6 @@ func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
 }
 
 func (gameState *GameState) KillSnake(snakeId string) {
-	fmt.Printf("Killing snake %v\n", snakeId)
 	newSnakes := []*Snake{}
 	for _, snake := range gameState.Snakes {
 		if snake.Id != snakeId {
