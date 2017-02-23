@@ -2,15 +2,19 @@ package main
 
 import (
 	"flag"
+	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
 	"os"
 )
 
+var redisConnectionPool *redis.Pool
+
 func main() {
 
 	simulate := flag.Bool("sim", false, "simulate instead of starting a web snake")
 	flag.Parse()
+	redisConnectionPool = NewPool()
 
 	if !*simulate {
 		http.HandleFunc("/start", start)

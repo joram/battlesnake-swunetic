@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/sendwithus/lib-go"
 	"math/rand"
 	"sort"
 )
@@ -64,10 +63,7 @@ func BestWeights(gamesWon map[string]int, snakes []*HeuristicSnake) map[string]i
 }
 
 func getWeight(name string) int {
-	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
-	if err != nil {
-		panic(err)
-	}
+	c := redisConnectionPool.Get()
 	defer c.Close()
 
 	weight, err := redis.Int(c.Do("GET", name))
@@ -78,10 +74,7 @@ func getWeight(name string) int {
 }
 
 func StoreWeights(weights map[string]int) {
-	c, err := redis.Dial("tcp", swu.GetEnvVariable("REDIS_URL", true))
-	if err != nil {
-		panic(err)
-	}
+	c := redisConnectionPool.Get()
 	defer c.Close()
 
 	for name, weight := range weights {
