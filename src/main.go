@@ -16,6 +16,7 @@ func main() {
 	flag.Parse()
 
 	if !*simulate {
+		http.HandleFunc("/4swu", fourswu)
 		http.HandleFunc("/start", start)
 		http.HandleFunc("/move", move)
 		port := os.Getenv("PORT")

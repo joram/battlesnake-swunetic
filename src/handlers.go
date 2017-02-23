@@ -2,9 +2,26 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
+
+type PageContent struct {
+	currentWeights:
+}
+
+func fourswu(w http.ResponseWriter, r *http.Request) {
+	cwd, _ := os.Getwd()
+	filename := filepath.Join(cwd, "templates/4swu.html")
+	t, _ := template.ParseFiles(filename)
+	details := PageContent{}
+	t.Execute(w, details)
+	println("/4swu")
+}
+
 
 func start(w http.ResponseWriter, r *http.Request) {
 	var requestData GameStartRequest
