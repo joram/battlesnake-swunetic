@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -9,19 +10,29 @@ import (
 	"path/filepath"
 )
 
+type stringInt struct {
+	s string
+	i int
+}
 type PageContent struct {
-	currentWeights:
+	currentWeights []stringInt
 }
 
 func fourswu(w http.ResponseWriter, r *http.Request) {
 	cwd, _ := os.Getwd()
 	filename := filepath.Join(cwd, "templates/4swu.html")
 	t, _ := template.ParseFiles(filename)
-	details := PageContent{}
+	details := PageContent{
+		currentWeights: []stringInt{},
+	}
+	game := NewGame("", 1, 0)
+	for _, hw := range game.currentGameState.HeuristicSnakes[0].WeightedHeuristics {
+		details.currentWeights = append(details.currentWeights, stringInt{hw.Name, hw.Weight})
+	}
+	fmt.Printf("weights: %v\n", details.currentWeights)
 	t.Execute(w, details)
 	println("/4swu")
 }
-
 
 func start(w http.ResponseWriter, r *http.Request) {
 	var requestData GameStartRequest
