@@ -25,6 +25,7 @@ func NewPool() *redis.Pool {
 
 func ParseRedisConnectionString(connectionString string) ConnectionInformation {
 	connectionString = strings.Replace(connectionString, "redis://", "", 1)
+	println("REDIS_URL: ", connectionString)
 
 	parts := strings.Split(connectionString, "@")
 	userBits := strings.Split(parts[0], ":")

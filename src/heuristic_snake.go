@@ -25,7 +25,7 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 
 	for name, heuristic := range heuristics {
 		weightedHeuristic := &WeightedHeuristic{
-			Weight:   getWeight(name),
+			Weight:   int(getWeight(name)),
 			MoveFunc: heuristic,
 			Name:     name,
 		}
@@ -42,6 +42,12 @@ func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
 	for i, _ := range heuristicSnake.WeightedHeuristics {
 		originalWeight := heuristicSnake.WeightedHeuristics[i].Weight
 		mutatedWeight := originalWeight + rand.Intn(maxMutation*2) - maxMutation // mutate between -x and +x
+		if mutatedWeight > 100 {
+			mutatedWeight = 100
+		}
+		if mutatedWeight < 0 {
+			mutatedWeight = 0
+		}
 		heuristicSnake.WeightedHeuristics[i].Weight = mutatedWeight
 	}
 }

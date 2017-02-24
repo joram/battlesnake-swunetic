@@ -53,6 +53,7 @@ type GameState struct {
 	Turn            int
 	Food            []Point
 	state           string
+	all             []*HeuristicSnake
 	winners         []*HeuristicSnake
 	losers          []*HeuristicSnake
 	You             string

@@ -3,101 +3,122 @@ package main
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"math/rand"
 	"sort"
+	"sync"
 )
 
 func Train(numSnakes, numGamesPerGeneration int) {
-	game := NewGame("", numSnakes, 1)
-	trainingSnakes := game.currentGameState.HeuristicSnakes
-	MutateSnakes(trainingSnakes)
-	gamesWon := map[string]int{}
-	for _, snake := range trainingSnakes {
-		gamesWon[snake.Id] = 0
-	}
-
-	for i := 0; i < numGamesPerGeneration; i++ {
-		game := NewGame(fmt.Sprintf("Game-%v", i), len(trainingSnakes), 1)
-		game.currentGameState.HeuristicSnakes = trainingSnakes
-		game.Run()
-		//game.Print()
-
-		for _, winner := range game.currentGameState.winners {
-			gamesWon[winner.Id] += 1
-		}
-	}
-
-	bestWeights := BestWeights(gamesWon, trainingSnakes)
+	games := RunGames(numSnakes, numGamesPerGeneration)
+	bestWeights := BestWeights(games)
 	StoreWeights(bestWeights)
+	LogBestWeights(bestWeights)
+}
 
+func RunGames(numSnakes int, numGamesPerGeneration int) []*Game {
+	games := []*Game{}
+
+	snakes := NewGame("", numSnakes, 1).currentGameState.HeuristicSnakes
+	for i, snake := range snakes {
+		snake.Mutate(i * 2)
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(numGamesPerGeneration)
+	for i := 0; i < numGamesPerGeneration; i++ {
+		game := NewGame(fmt.Sprintf("Game-%v", i), numSnakes, 1)
+		for j, snake := range game.currentGameState.HeuristicSnakes {
+			snake.WeightedHeuristics = snakes[j].WeightedHeuristics
+		}
+		games = append(games, game)
+		go func(game *Game, wg *sync.WaitGroup) {
+			game.Run()
+			wg.Done()
+		}(game, &wg)
+	}
+	wg.Wait()
+	return games
+}
+
+func LogBestWeights(bestWeights map[string]float64) {
 	keys := []string{}
-	for key, _ := range bestWeights {
+	for key := range bestWeights {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
 
 	s := "NEW BEST: "
 	for _, key := range keys {
-		s += fmt.Sprintf("%v:%v, ", key, bestWeights[key])
+		s += fmt.Sprintf("%v:%v, ", key, int(bestWeights[key]))
 	}
 	println(s)
 }
 
-func BestWeights(gamesWon map[string]int, snakes []*HeuristicSnake) map[string]int {
+func BestWeights(games []*Game) map[string]float64 {
+	winningBonusWeight := 500
 
-	bestSnakeWins := 0
-	var bestSnake *HeuristicSnake
-	for _, snake := range snakes {
-		if gamesWon[snake.Id] >= bestSnakeWins {
-			bestSnakeWins = gamesWon[snake.Id]
-			bestSnake = snake
+	snakeQuality := make(map[string]float64)
+	for _, game := range games {
+		for _, snake := range game.currentGameState.winners {
+			snakeQuality[snake.Id] += float64(snake.DiedOnTurn + winningBonusWeight)
+		}
+		for _, snake := range game.currentGameState.losers {
+			snakeQuality[snake.Id] += float64(snake.DiedOnTurn)
 		}
 	}
 
-	weights := make(map[string]int)
-	for _, weightedHeuristic := range bestSnake.WeightedHeuristics {
-		weights[weightedHeuristic.Name] = weightedHeuristic.Weight
+	totalQuality := float64(0)
+	for _, quality := range snakeQuality {
+		totalQuality += quality
+	}
+
+	for snakeId, quality := range snakeQuality {
+		snakeQuality[snakeId] = quality / totalQuality
+	}
+
+	weights := make(map[string]float64)
+	for _, snake := range games[0].currentGameState.HeuristicSnakes {
+		snakeWeights := make(map[string]int)
+		for _, weightedHeuristic := range snake.WeightedHeuristics {
+			snakeWeights[weightedHeuristic.Name] = weightedHeuristic.Weight
+		}
+		for name, weight := range snakeWeights {
+			weights[name] += float64(weight) * snakeQuality[snake.Id]
+		}
 	}
 
 	return weights
 }
 
-func getWeight(name string) int {
+func getWeight(name string) float64 {
 	c := redisConnectionPool.Get()
 	defer c.Close()
 
-	weight, err := redis.Int(c.Do("GET", name))
-	if err != nil || weight == 0 {
-		weight = rand.Intn(50) // figure out a good starting Weight for a new heuristic
+	weight, err := redis.Float64(c.Do("GET", name))
+	if err != nil {
+		println(err.Error())
+		weight = 50
+	}
+	if weight < 0 {
+		weight = 0
+	}
+	if weight > 100 {
+		weight = 100
 	}
 	return weight
 }
 
-func StoreWeights(weights map[string]int) {
+func StoreWeights(weights map[string]float64) {
 	c := redisConnectionPool.Get()
 	defer c.Close()
 
-	for name, weight := range weights {
-		c.Do("SET", name, weight)
+	average := float64(0)
+	for _, w := range weights {
+		average += w
 	}
-}
+	average = average / float64(len(weights))
+	offset := float64(50) - average
 
-func MutateSnakes(snakes []*HeuristicSnake) {
-
-	mutationAmount := []int{0, 2, 3, 20}
-
-	for i := 0; i < len(snakes); i++ {
-		snakes[i].Mutate(mutationAmount[i])
-		weights := map[string]int{}
-		for _, weight := range snakes[i].WeightedHeuristics {
-			w := weight.Weight
-			if w > 100 {
-				w = 100
-			}
-			if w < 0 {
-				w = 0
-			}
-			weights[weight.Name] = w
-		}
+	for name, weight := range weights {
+		c.Do("SET", name, weight+offset)
 	}
 }
