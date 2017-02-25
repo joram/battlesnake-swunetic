@@ -46,9 +46,9 @@ func LogBestWeights(bestWeights map[string]float64) {
 	}
 	sort.Strings(keys)
 
-	s := "NEW BEST: "
+	s := "Weights: "
 	for _, key := range keys {
-		s += fmt.Sprintf("%v:%v, ", key, int(bestWeights[key]))
+		s += fmt.Sprintf("sample#%v=%v ", key, int(bestWeights[key]))
 	}
 	println(s)
 }
