@@ -21,6 +21,10 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 		"straight":     GoStraightHeuristic,
 		"random":       RandomHeuristic,
 		"control":      BoardControlHeuristic,
+		"agressive":    CollisionHeuristic,
+		"attempt-kill": AimeForCollisionsWithSmallerSnakes,
+		"avoid-death":  AvoidCollisionsWithBiggerSnakes,
+		"hug-walls":    HuggWallsHeuristic,
 	}
 
 	for name, heuristic := range heuristics {

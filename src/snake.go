@@ -10,3 +10,7 @@ func (snake *Snake) Extend(direction string) Point {
 func (snake *Snake) Shrink() {
 	snake.Coords = snake.Coords[len(snake.Coords)-1:]
 }
+
+func (snake *Snake) Length() int {
+	return len(snake.Coords)
+}
