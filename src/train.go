@@ -48,7 +48,7 @@ func LogBestWeights(bestWeights map[string]float64) {
 
 	s := "Weights: "
 	for _, key := range keys {
-		s += fmt.Sprintf("sample#%v=%v ", key, int(bestWeights[key]))
+		s += fmt.Sprintf("sample#heuristic.%v=%v ", key, int(bestWeights[key]))
 	}
 	println(s)
 }
