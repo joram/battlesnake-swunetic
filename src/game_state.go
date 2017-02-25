@@ -56,6 +56,26 @@ func (gameState *GameState) MySnake() *Snake {
 	return snake
 }
 
+func (gameState *GameState) OtherSnakes() []*Snake {
+	snakes := []*Snake{}
+	for _, snake := range gameState.Snakes {
+		if snake.Id != gameState.You {
+			snakes = append(snakes, snake)
+		}
+	}
+	return snakes
+}
+
+func (gameState *GameState) CountSurroundingWalls(p *Point) int {
+	solids := 0
+	for _, neighbour := range p.NeighboursWithDiagonals() {
+		if gameState.IsSolid(*neighbour, "") {
+			solids += 1
+		}
+	}
+	return solids
+}
+
 func (gameState *GameState) String() string {
 	b, err := json.Marshal(gameState)
 	if err != nil {

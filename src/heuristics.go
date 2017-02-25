@@ -7,7 +7,162 @@ import (
 
 // NOTE: maybe split into multiple files if this gets too big
 
+func AvoidCollisionsWithBiggerSnakes(gameState *GameState) WeightedDirections {
+	me := gameState.MySnake()
+
+	pointsToAvoid := []*Point{}
+	for _, otherSnake := range gameState.OtherSnakes() {
+		if otherSnake.Length() >= me.Length() {
+			pointsToAvoid = append(pointsToAvoid, otherSnake.Coords[0].Neighbours()...)
+		}
+	}
+
+	weightedDirections := WeightedDirections{}
+
+	option := me.Coords[0].Up()
+	for _, pointToAvoid := range pointsToAvoid {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: UP,
+				Weight:    -100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Down()
+	for _, pointToAvoid := range pointsToAvoid {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: DOWN,
+				Weight:    -100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Left()
+	for _, pointToAvoid := range pointsToAvoid {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: LEFT,
+				Weight:    -100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Right()
+	for _, pointToAvoid := range pointsToAvoid {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: RIGHT,
+				Weight:    -100,
+			})
+			break
+		}
+	}
+
+	return weightedDirections
+}
+
+func AimeForCollisionsWithSmallerSnakes(gameState *GameState) WeightedDirections {
+	me := gameState.MySnake()
+
+	pointsToAimeFor := []*Point{}
+	for _, otherSnake := range gameState.OtherSnakes() {
+		if otherSnake.Length() < me.Length() {
+			pointsToAimeFor = append(pointsToAimeFor, otherSnake.Coords[0].Neighbours()...)
+		}
+	}
+
+	weightedDirections := WeightedDirections{}
+
+	option := me.Coords[0].Up()
+	for _, pointToAvoid := range pointsToAimeFor {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: UP,
+				Weight:    100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Down()
+	for _, pointToAvoid := range pointsToAimeFor {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: DOWN,
+				Weight:    100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Left()
+	for _, pointToAvoid := range pointsToAimeFor {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: LEFT,
+				Weight:    100,
+			})
+			break
+		}
+	}
+
+	option = me.Coords[0].Right()
+	for _, pointToAvoid := range pointsToAimeFor {
+		if pointToAvoid.Equals(*option) {
+			weightedDirections = append(weightedDirections, WeightedDirection{
+				Direction: RIGHT,
+				Weight:    100,
+			})
+		}
+	}
+
+	return weightedDirections
+}
+
+func CollisionHeuristic(gameState *GameState) WeightedDirections {
+	smallHeads := []*Point{}
+	me := gameState.MySnake()
+	myLength := me.Length()
+	for _, otherSnake := range gameState.OtherSnakes() {
+		if otherSnake.Length() < myLength {
+			smallHeads = append(smallHeads, &otherSnake.Coords[0])
+		}
+	}
+	return MoveTo(gameState, smallHeads)
+}
+
+func HuggWallsHeuristic(gameState *GameState) WeightedDirections {
+	me := gameState.MySnake()
+	head := me.Coords[0]
+	surroundingWallCountUp := gameState.CountSurroundingWalls(head.Up())
+	surroundingWallCountDown := gameState.CountSurroundingWalls(head.Down())
+	surroundingWallCountLeft := gameState.CountSurroundingWalls(head.Left())
+	surroundingWallCountRight := gameState.CountSurroundingWalls(head.Right())
+	total := surroundingWallCountUp + surroundingWallCountDown + surroundingWallCountLeft + surroundingWallCountRight
+
+	return []WeightedDirection{
+		{Direction: UP, Weight: 100 * surroundingWallCountUp / total},
+		{Direction: DOWN, Weight: 100 * surroundingWallCountDown / total},
+		{Direction: LEFT, Weight: 100 * surroundingWallCountLeft / total},
+		{Direction: RIGHT, Weight: 100 * surroundingWallCountRight / total},
+	}
+
+}
+
 func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
+	foods := []*Point{}
+	for _, food := range gameState.Food {
+		foods = append(foods, &food)
+	}
+	return MoveTo(gameState, foods)
+}
+
+func MoveTo(gameState *GameState, goals []*Point) WeightedDirections {
 	WeightUp := 0
 	WeightDown := 0
 	WeightLeft := 0
@@ -18,11 +173,8 @@ func NearestFoodHeuristic(gameState *GameState) WeightedDirections {
 	}
 
 	head := snake.Coords[0]
-	foods := []*Point{}
-	for _, food := range gameState.Food {
-		foods = append(foods, &food)
-	}
-	pathCalc := NewPathCalculation(&head, foods, gameState)
+
+	pathCalc := NewPathCalculation(&head, goals, gameState)
 	pathCalc.Run()
 	paths := pathCalc.Paths()
 	for _, path := range paths {

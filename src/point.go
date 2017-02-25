@@ -45,6 +45,20 @@ func (p *Point) Neighbours() []*Point {
 	}
 }
 
+func (p *Point) NeighboursWithDiagonals() []*Point {
+	points := p.Neighbours()
+	diagonals := []Point{
+		p.Add(Point{1, 1}),
+		p.Add(Point{1, -1}),
+		p.Add(Point{-1, 1}),
+		p.Add(Point{-1, -1}),
+	}
+	for _, d := range diagonals {
+		points = append(points, &d)
+	}
+	return points
+}
+
 func (p *Point) Equals(p2 Point) bool {
 	return p.X == p2.X && p.Y == p2.Y
 }
