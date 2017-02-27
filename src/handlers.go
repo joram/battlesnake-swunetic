@@ -32,7 +32,6 @@ func move(w http.ResponseWriter, r *http.Request) {
 	responseData := MoveResponse{
 		Move: snake.Move(&gameState),
 	}
-	log.Printf("Move request - direction:%v\n", responseData.Move)
 	b, err := json.Marshal(responseData)
 	if err != nil {
 		log.Fatalf("%v", err)

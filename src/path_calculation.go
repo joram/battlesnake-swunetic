@@ -1,89 +1,92 @@
 package main
 
-func NewPathCalculation(from *Point, to Points, gs *GameState) PathCalculation {
-	return PathCalculation{
-		gameState: gs,
-		start:     from,
-		goals:     to,
-		visited:   []PointPair{{from: from, to: from}},
-		toVisit:   Points{from},
+import (
+	"math/rand"
+)
+
+func NewAStar(gameState *GameState, start *Point) *AStar {
+	aStar := AStar{
+		gameState:   gameState,
+		start:       start,
+		turnsTo:     make(map[Point]int),
+		pathToCache: make(map[Point][]*Point),
 	}
+	aStar.process()
+	return &aStar
 }
 
-func (pc *PathCalculation) isAGoal(p *Point) bool {
-	for _, goal := range pc.goals {
-		if goal.Equals(*p) {
-			return true
-		}
+func (a *AStar) shouldVisit(p *Point) bool {
+	_, set := a.turnsTo[*p]
+	if set {
+		return false
 	}
-	return false
-}
-
-func (pc *PathCalculation) removeGoal(p *Point) {
-	newGoals := Points{}
-	for _, goal := range pc.goals {
-		if !goal.Equals(*p) {
-			newGoals = append(newGoals, goal)
-		}
-	}
-	pc.goals = newGoals
-}
-
-func (pc *PathCalculation) haveVisited(p *Point) bool {
-	for _, visited := range pc.visited {
-		if visited.to.Equals(*p) {
-			return true
-		}
+	if a.gameState.IsEmpty(p) {
+		return true
 	}
 	return false
 }
 
-func (pc *PathCalculation) Run() {
-	for len(pc.toVisit) > 0 {
-		p := pc.toVisit[0]
-		pc.toVisit = pc.toVisit[1:]
-		if pc.isAGoal(p) {
-			pc.removeGoal(p)
-			pc.achievedGoals = append(pc.achievedGoals, p)
-			continue
-		}
+func (a *AStar) process() {
+	initial := AStarPoint{a.start, 0}
+	var toVisit = []*AStarPoint{&initial}
+	a.turnsTo[*a.start] = 0
+	for len(toVisit) > 0 {
+		p := toVisit[0]
+		toVisit = toVisit[1:]
 
-		for _, neighbour := range p.Neighbours() {
-			if !pc.haveVisited(neighbour) && pc.gameState.IsEmpty(*neighbour) {
-				pc.visited = append(pc.visited, PointPair{from: p, to: neighbour})
-				pc.toVisit = append(pc.toVisit, neighbour)
+		//println("visiting ", p.point.String())
+		for _, neightbour := range p.point.Neighbours() {
+			if a.shouldVisit(neightbour) {
+				a.turnsTo[*neightbour] = p.turnsTo + 1
+				next := AStarPoint{neightbour, p.turnsTo + 1}
+				toVisit = append(toVisit, &next)
 			}
 		}
 	}
 }
 
-func (pc *PathCalculation) PathFrom(currentPoint *Point) Points {
-	path := Points{currentPoint}
-	for !currentPoint.Equals(*pc.start) {
-		for _, pointPair := range pc.visited {
-			if pointPair.to.Equals(*currentPoint) {
-				path = append(path, pointPair.from)
-				currentPoint = pointPair.from
-				break
-			}
+func (a *AStar) previousStep(to *Point) *Point {
+	nextOptions := []*Point{}
+	timeToCurr := a.turnsTo[*to]
+	for _, neighbour := range to.Neighbours() {
+		timeTo, set := a.turnsTo[*neighbour]
+		if set && timeTo < timeToCurr {
+			nextOptions = append(nextOptions, neighbour)
 		}
 	}
+
+	// no path
+	if len(nextOptions) == 0 {
+		return nil
+	}
+
+	next := nextOptions[rand.Intn(len(nextOptions))]
+	return next
+}
+
+func (a *AStar) pathTo(to *Point) []*Point {
+	path := a.pathToCache[*to]
+	if len(path) > 0 {
+		return path
+	}
+
+	curr := to
+	for !curr.Equals(*a.start) {
+		path = append(path, curr)
+		curr = a.previousStep(curr)
+		if curr == nil {
+			break
+		}
+	}
+
+	// reverse
+	if curr != nil {
+		for i := len(path)/2 - 1; i >= 0; i-- {
+			opp := len(path) - 1 - i
+			path[i], path[opp] = path[opp], path[i]
+		}
+	}
+
+	a.pathToCache[*to] = path
 	return path
-}
-
-func (pc *PathCalculation) Paths() []Points {
-	paths := []Points{}
-	for _, from := range pc.achievedGoals {
-		paths = append(paths, pc.PathFrom(from))
-	}
-	return paths
-}
-
-func (pc *PathCalculation) PreviousPoint(p *Point) *Point {
-	for _, pPair := range pc.visited {
-		if pPair.to.Equals(*p) {
-			return pPair.from
-		}
-	}
-	return nil
 }

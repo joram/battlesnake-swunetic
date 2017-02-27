@@ -7,6 +7,8 @@ import (
 	"sync"
 )
 
+var weightCache = make(map[string]float64)
+
 func Train(numSnakes, numGamesPerGeneration int) {
 	games := RunGames(numSnakes, numGamesPerGeneration)
 	bestWeights := BestWeights(games)
@@ -90,6 +92,11 @@ func BestWeights(games []*Game) map[string]float64 {
 }
 
 func getWeight(name string) float64 {
+	val, set := weightCache[name]
+	if set {
+		return val
+	}
+
 	c := redisConnectionPool.Get()
 	defer c.Close()
 
@@ -104,6 +111,8 @@ func getWeight(name string) float64 {
 	if weight > 100 {
 		weight = 100
 	}
+
+	weightCache[name] = weight
 	return weight
 }
 
@@ -120,5 +129,6 @@ func StoreWeights(weights map[string]float64) {
 
 	for name, weight := range weights {
 		c.Do("SET", name, weight+offset)
+		weightCache[name] = weight
 	}
 }
