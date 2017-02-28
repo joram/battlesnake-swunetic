@@ -31,19 +31,17 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 }
 
 func SnakeQualities(games []*Game) map[string]float64 {
-	winningBonusWeight := 500
-
 	snakeQuality := make(map[string]float64)
 	for _, game := range games {
 		diedOnTurn := 0
 		for _, snake := range game.currentGameState.winners {
 			diedOnTurn = game.currentGameState.Turn
 			snake = game.currentGameState.GetSnakeAI(snake.GetId())
-			snakeQuality[snake.GetId()] += float64(diedOnTurn + winningBonusWeight)
+			snakeQuality[snake.GetId()] += float64(diedOnTurn + game.currentGameState.Turn)
 		}
 		for _, snake := range game.currentGameState.losers {
 			diedOnTurn = game.currentGameState.DiedOnTurn[snake.GetId()]
-			snakeQuality[snake.GetId()] += float64(diedOnTurn)
+			snakeQuality[snake.GetId()] += float64(diedOnTurn + game.currentGameState.Turn/4)
 		}
 	}
 
