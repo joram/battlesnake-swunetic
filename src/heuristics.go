@@ -231,7 +231,7 @@ func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 	for _, direction := range allDirections {
 		if directionOfMovement.Equals(directionVector(direction)) {
 			possibleNewHead := head.Add(directionOfMovement)
-			if !gameState.IsSolid(&possibleNewHead, mySnake.Id) {
+			if !gameState.IsPossiblySolid(&possibleNewHead, mySnake.Id) {
 				return []WeightedDirection{{Direction: direction, Weight: 50}}
 			}
 		}
@@ -253,7 +253,7 @@ func RandomHeuristic(gameState *GameState) WeightedDirections {
 	for _, direction := range allDirections {
 		directionOfMovement := directionVector(direction)
 		possibleNewHead := head.Add(directionOfMovement)
-		if !gameState.IsSolid(&possibleNewHead, mySnake.Id) {
+		if !gameState.IsPossiblySolid(&possibleNewHead, mySnake.Id) {
 			validDirections = append(validDirections, direction)
 		}
 	}
@@ -267,7 +267,7 @@ func RandomHeuristic(gameState *GameState) WeightedDirections {
 }
 
 func BoardControl(gameState *GameState, start *Point) float64 {
-	if !gameState.IsEmpty(start) {
+	if gameState.IsPossiblySolid(start, "") {
 		return float64(0)
 	}
 	toVisit := []*Point{start}
@@ -277,7 +277,7 @@ func BoardControl(gameState *GameState, start *Point) float64 {
 		toVisit = toVisit[:len(toVisit)-1]
 		haveVisited = append(haveVisited, p)
 		for _, neighbour := range p.Neighbours() {
-			if gameState.IsEmpty(neighbour) {
+			if !gameState.IsPossiblySolid(neighbour, "") {
 				shouldCheck := true
 
 				for _, visitedPoint := range haveVisited {

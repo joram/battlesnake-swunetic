@@ -238,6 +238,21 @@ func (gameState *GameState) IsSolid(point *Point, ignoreSnakeHead string) bool {
 	return false
 }
 
+func (gameState *GameState) IsPossiblySolid(point *Point, ignoreSnakeHead string) bool {
+	if gameState.IsSolid(point, ignoreSnakeHead) {
+		return true
+	}
+	for _, snake := range gameState.Snakes {
+		for _, neighbour := range snake.Head().Neighbours() {
+			if neighbour.Equals(*point) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func (gameState *GameState) RemoveSnake(snakeId string) {
 	// remove snake
 	newSnakes := []*Snake{}
