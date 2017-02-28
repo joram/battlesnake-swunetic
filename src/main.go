@@ -40,7 +40,7 @@ func main() {
 		if port == "" {
 			port = "9000"
 		}
-
+		PrimeWeightsCache()
 		log.Printf("Running server on port %s...\n", port)
 		http.ListenAndServe(":"+port, nil)
 	} else {

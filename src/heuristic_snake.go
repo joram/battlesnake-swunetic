@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 	"sync"
@@ -19,6 +20,9 @@ var heuristics = map[string]MoveHeuristic{
 
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
 	h.WeightedDirections = h.MoveFunc(gameState)
+	if false {
+		fmt.Printf("%v:\t%v\n", h.Name, h.WeightedDirections)
+	}
 }
 
 func NewHeuristicSnake(id string) SnakeAI {

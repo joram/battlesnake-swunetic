@@ -314,6 +314,10 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 	controlUp := BoardControl(gameState, head.Up())
 	controlDown := BoardControl(gameState, head.Down())
 	maxControl := math.Max(controlLeft, math.Max(controlRight, math.Max(controlUp, controlDown)))
+	minControl := math.Min(controlLeft, math.Min(controlRight, math.Min(controlUp, controlDown)))
+	if maxControl == minControl {
+		return []WeightedDirection{}
+	}
 
 	weightedDirections := []WeightedDirection{
 		{Weight: int(controlLeft / maxControl * 100), Direction: LEFT},

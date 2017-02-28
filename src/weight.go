@@ -57,6 +57,13 @@ func SnakeQualities(games []*Game) map[string]float64 {
 	return snakeQuality
 }
 
+func PrimeWeightsCache() {
+	for name, _ := range heuristics {
+		weight := getWeight(name)
+		fmt.Printf("%v\t%v\n", name, weight)
+	}
+}
+
 func getWeight(name string) int {
 	val, set := weightCache[name]
 	if set {
