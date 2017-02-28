@@ -22,6 +22,7 @@ func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar 
 	heuristicQuality := qualities[heuristicSnakeId]
 	if heuristicQuality > bestQualitySoFar {
 		bestWeights = snake.GetWeights()
+		fmt.Printf("%v", bestWeights)
 		StoreWeights(bestWeights)
 
 		averageTurns = 0
