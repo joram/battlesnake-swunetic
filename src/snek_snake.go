@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/sendwithus/snek/src/"
+)
+
 func NewSnekSnake() SnakeAI {
 	return SnekSnake{}
 }
@@ -24,5 +28,11 @@ func (snake SnekSnake) GetWeights() map[string]int {
 }
 
 func (snake SnekSnake) Move(gameState *GameState) string {
-	return RIGHT
+	mr := MoveRequest{}
+	Mov
+	return mr.GenerateMove()
+}
+
+func (gameState *GameState) GetSnekMoveRequest() MoveRequest {
+	snek.src.MoveRequest{}
 }
