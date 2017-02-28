@@ -58,7 +58,7 @@ func (snake HeuristicSnake) GetWeights() map[string]int {
 	return weights
 }
 
-func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
+func (heuristicSnake HeuristicSnake) Mutate(maxMutation int) {
 	if maxMutation <= 0 {
 		return
 	}

@@ -10,6 +10,7 @@ func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) {
 	start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
+	snake.Mutate(3)
 	snek := NewSnekSnake()
 	snakeAIs := []SnakeAI{snake, snek}
 	snakeNames := []string{heuristicSnakeId, "snek"}

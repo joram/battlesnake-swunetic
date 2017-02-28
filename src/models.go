@@ -75,6 +75,7 @@ type SnakeAI interface {
 	GetDiedOnTurn() int
 	GetWeights() map[string]int
 	GetId() string
+	Mutate(int)
 }
 
 type HeuristicSnake struct {

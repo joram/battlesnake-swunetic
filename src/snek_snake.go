@@ -12,6 +12,9 @@ func (snake SnekSnake) GetDiedOnTurn() int {
 	return snake.DiedOnTurn
 }
 
+func (snake SnekSnake) Mutate(weight int) {
+}
+
 func (snake SnekSnake) GetId() string {
 	return "snek"
 }
