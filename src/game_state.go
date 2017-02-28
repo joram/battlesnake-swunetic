@@ -2,16 +2,22 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
+	"time"
 )
 
 func NewGameState(mr MoveRequest) GameState {
+	start := time.Now()
 
 	heuristicSnakes := []*HeuristicSnake{}
 	for _, snake := range mr.Snakes {
 		heuristicSnake := NewHeuristicSnake(snake.Id)
 		heuristicSnakes = append(heuristicSnakes, &heuristicSnake)
+	}
+	if time.Since(start) > 500*time.Millisecond {
+		fmt.Printf("Calculated HeuristicSnakes in %v\n", time.Since(start))
 	}
 
 	snakes := []*Snake{}
@@ -37,7 +43,7 @@ func NewGameState(mr MoveRequest) GameState {
 
 	}
 
-	return GameState{
+	gameState := GameState{
 		HeuristicSnakes: heuristicSnakes,
 		Snakes:          snakes,
 		Width:           mr.Width,
@@ -47,8 +53,18 @@ func NewGameState(mr MoveRequest) GameState {
 		winners:         []*HeuristicSnake{},
 		state:           "running",
 		You:             mr.You,
+		aStart:          map[string]*AStar{},
 	}
 
+	start = time.Now()
+	for _, snake := range gameState.Snakes {
+		gameState.aStart[snake.Id] = NewAStar(&gameState, snake.Head())
+	}
+	if time.Since(start) > 500*time.Millisecond {
+		fmt.Printf("Calculated snake A*'s in %v\n", time.Since(start))
+	}
+
+	return gameState
 }
 
 func (gameState *GameState) MySnake() *Snake {
@@ -69,7 +85,7 @@ func (gameState *GameState) OtherSnakes() []*Snake {
 func (gameState *GameState) CountSurroundingWalls(p *Point) int {
 	solids := 0
 	for _, neighbour := range p.NeighboursWithDiagonals() {
-		if gameState.IsSolid(*neighbour, "") {
+		if gameState.IsSolid(neighbour, "") {
 			solids += 1
 		}
 	}
@@ -146,7 +162,7 @@ func (gameState *GameState) NextGameState() *GameState {
 
 	// collision
 	for snakeId, newHead := range newHeads {
-		if gameState.IsSolid(newHead, snakeId) {
+		if gameState.IsSolid(&newHead, snakeId) {
 			nextGameState.KillSnake(snakeId)
 		}
 	}
@@ -176,7 +192,7 @@ func (gameState *GameState) SpawnFood() {
 	for x := 0; x < gameState.Width; x += 1 {
 		for y := 0; y < gameState.Height; y += 1 {
 			p := Point{X: x, Y: y}
-			if !gameState.IsSolid(p, "") && !gameState.FoodAt(&p) {
+			if !gameState.IsSolid(&p, "") && !gameState.FoodAt(&p) {
 				emptyPoints = append(emptyPoints, p)
 			}
 		}
@@ -199,7 +215,7 @@ func (gameState *GameState) FoodAt(p *Point) bool {
 	return false
 }
 
-func (gameState *GameState) IsEmpty(point Point) bool {
+func (gameState *GameState) IsEmpty(point *Point) bool {
 	return !gameState.IsSolid(point, "")
 }
 
@@ -223,7 +239,7 @@ func (gameState *GameState) shortestPathTo(from *Point, to *Point, haveVisited [
 	options := [][]*Point{}
 	haveVisited = append(haveVisited, from)
 	for _, neighbour := range from.Neighbours() {
-		if gameState.IsEmpty(*neighbour) {
+		if gameState.IsEmpty(neighbour) {
 			visited := false
 			for _, visitedPoint := range haveVisited {
 				if visitedPoint.Equals(*neighbour) {
@@ -251,7 +267,7 @@ func (gameState *GameState) shortestPathTo(from *Point, to *Point, haveVisited [
 	return append(shortestOption, from)
 }
 
-func (gameState *GameState) IsSolid(point Point, ignoreSnakeHead string) bool {
+func (gameState *GameState) IsSolid(point *Point, ignoreSnakeHead string) bool {
 	if point.X < 0 || point.X >= gameState.Width {
 		return true
 	}

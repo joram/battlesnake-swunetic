@@ -57,6 +57,7 @@ type GameState struct {
 	winners         []*HeuristicSnake
 	losers          []*HeuristicSnake
 	You             string
+	aStart          map[string]*AStar
 }
 
 type MoveHeuristic func(gameState *GameState) WeightedDirections
@@ -92,6 +93,19 @@ type PathCalculation struct {
 	visited       []PointPair
 	toVisit       Points
 	gameState     *GameState
+}
+
+type AStar struct {
+	gameState   *GameState
+	start       *Point
+	turnsTo     map[Point]int
+	visited     map[Point]bool
+	pathToCache map[Point][]*Point
+}
+
+type AStarPoint struct {
+	point   *Point
+	turnsTo int
 }
 
 type Snake struct {

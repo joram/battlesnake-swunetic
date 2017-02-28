@@ -14,3 +14,7 @@ func (snake *Snake) Shrink() {
 func (snake *Snake) Length() int {
 	return len(snake.Coords)
 }
+
+func (snake *Snake) Head() *Point {
+	return &snake.Coords[0]
+}
