@@ -6,12 +6,12 @@ import (
 	_ "time"
 )
 
-func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) float64 {
+func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar float64) float64 {
 	//start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
 	bestWeights := snake.GetWeights()
-	snake.Mutate(5)
+	snake.Mutate(mutation)
 	snek := NewSnekSnake()
 	snakeAIs := []SnakeAI{snake, snek}
 	snakeNames := []string{heuristicSnakeId, "snek"}
