@@ -19,10 +19,16 @@ func main() {
 	redisConnectionPool = NewPool()
 
 	if *setWeightsFlag {
-		weights := map[string]float64{}
+		weights := map[string]int{}
 		weights["hug-walls"] = 0
 		weights["straight"] = 0
+		weights["random"] = 0
+		weights["control"] = 100
 		weights["nearest-food"] = 100
+		weights["agressive"] = 100
+		weights["attempt-kill"] = 100
+		weights["avoid-death"] = 100
+
 		StoreWeights(weights)
 		fmt.Printf("Wrote: %v", weights)
 		return
@@ -40,7 +46,7 @@ func main() {
 	} else {
 		log.Println("Simulate a game to train swunetics!")
 		for {
-			Train(2, 10)
+			TrainAgainstSnek(100, 0)
 		}
 	}
 }

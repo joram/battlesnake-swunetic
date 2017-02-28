@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 )
@@ -175,7 +176,15 @@ func MoveTo(gameState *GameState, goals []*Point) WeightedDirections {
 	head := snake.Coords[0]
 
 	for _, goal := range goals {
-		path := gameState.aStart[snake.Id].pathTo(goal)
+		aStar, set := gameState.aStar[snake.Id]
+		if !set {
+			for _, snakeId := range gameState.aStar {
+				fmt.Printf("\t%v", snakeId)
+			}
+			println("couldn't find aStar for ", snake.Id)
+			continue
+		}
+		path := aStar.pathTo(goal)
 
 		direction := path[0].Subtract(head)
 		if direction == directionVector(UP) {

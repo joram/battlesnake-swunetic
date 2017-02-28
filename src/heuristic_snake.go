@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 	"sync"
-	"time"
 )
 
 var heuristics = map[string]MoveHeuristic{
@@ -20,15 +18,10 @@ var heuristics = map[string]MoveHeuristic{
 }
 
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
-	start := time.Now()
 	h.WeightedDirections = h.MoveFunc(gameState)
-
-	if time.Since(start) > 500*time.Millisecond {
-		fmt.Printf("Calculated %v in %v\n", h.Name, time.Since(start))
-	}
 }
 
-func NewHeuristicSnake(id string) HeuristicSnake {
+func NewHeuristicSnake(id string) SnakeAI {
 	snake := HeuristicSnake{
 		Id:                 id,
 		WeightedHeuristics: []*WeightedHeuristic{},
@@ -43,6 +36,26 @@ func NewHeuristicSnake(id string) HeuristicSnake {
 		snake.WeightedHeuristics = append(snake.WeightedHeuristics, weightedHeuristic)
 	}
 	return snake
+}
+
+func (heuristicSnake HeuristicSnake) GetId() string {
+	return heuristicSnake.Id
+}
+
+func (heuristicSnake HeuristicSnake) SetDiedOnTurn(turn int) {
+	heuristicSnake.DiedOnTurn = turn
+}
+
+func (snake HeuristicSnake) GetDiedOnTurn() int {
+	return snake.DiedOnTurn
+}
+
+func (snake HeuristicSnake) GetWeights() map[string]int {
+	weights := map[string]int{}
+	for _, hw := range snake.WeightedHeuristics {
+		weights[hw.Name] = hw.Weight
+	}
+	return weights
 }
 
 func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
@@ -63,8 +76,7 @@ func (heuristicSnake *HeuristicSnake) Mutate(maxMutation int) {
 	}
 }
 
-func (snake *HeuristicSnake) Move(gameState *GameState) string {
-	start := time.Now()
+func (snake HeuristicSnake) Move(gameState *GameState) string {
 
 	// do heuristics
 	var heuristicWaitGroup sync.WaitGroup
@@ -76,9 +88,7 @@ func (snake *HeuristicSnake) Move(gameState *GameState) string {
 		}(snake.WeightedHeuristics[i])
 	}
 	heuristicWaitGroup.Wait()
-	if time.Since(start) > 500*time.Millisecond {
-		fmt.Printf("Calculated heuristics %v\n", time.Since(start))
-	}
+
 	// calc weights of moves
 	weights := map[string]int{
 		UP:    0,
