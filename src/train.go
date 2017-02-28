@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
+	_ "time"
 )
 
 func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) float64 {
-	start := time.Now()
+	//start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
 	bestWeights := snake.GetWeights()
@@ -29,9 +29,11 @@ func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) float
 			averageTurns += game.currentGameState.Turn
 		}
 		averageTurns = averageTurns / len(games)
-
+		//LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), heuristicQuality, averageTurns)
+		fmt.Printf("\n%v", heuristicQuality*100)
+	} else {
+		print(".")
 	}
-	LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), heuristicQuality, averageTurns)
 	return heuristicQuality
 }
 
