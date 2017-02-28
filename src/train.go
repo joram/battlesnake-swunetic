@@ -113,6 +113,7 @@ func getWeight(name string) float64 {
 	}
 
 	weightCache[name] = weight
+	println(name, ": ", int(weight))
 	return weight
 }
 

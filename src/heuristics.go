@@ -174,29 +174,45 @@ func MoveTo(gameState *GameState, goals []*Point) WeightedDirections {
 
 	head := snake.Coords[0]
 
+	shortestTimeTo := -1
 	for _, goal := range goals {
-		path := gameState.aStart[snake.Id].pathTo(goal)
-
-		direction := path[0].Subtract(head)
-		if direction == directionVector(UP) {
-			WeightUp += 25
-		}
-		if direction == directionVector(DOWN) {
-			WeightDown += 25
-		}
-		if direction == directionVector(LEFT) {
-			WeightLeft += 25
-		}
-		if direction == directionVector(RIGHT) {
-			WeightRight += 25
+		timeTo := gameState.aStart[snake.Id].turnsTo[*goal]
+		if timeTo < shortestTimeTo || shortestTimeTo == -1 {
+			shortestTimeTo = timeTo
 		}
 	}
-	return []WeightedDirection{
+
+	for _, goal := range goals {
+		timeTo := gameState.aStart[snake.Id].turnsTo[*goal]
+		path := gameState.aStart[snake.Id].pathTo(goal)
+
+		if timeTo == 0 {
+			timeTo = 1
+		}
+
+		weight := (100 * shortestTimeTo) / timeTo
+		direction := path[0].Subtract(head)
+		if direction == directionVector(UP) {
+			WeightUp += weight
+		}
+		if direction == directionVector(DOWN) {
+			WeightDown += weight
+		}
+		if direction == directionVector(LEFT) {
+			WeightLeft += weight
+		}
+		if direction == directionVector(RIGHT) {
+			WeightRight += weight
+		}
+	}
+	weights := []WeightedDirection{
 		{Direction: UP, Weight: WeightUp},
 		{Direction: DOWN, Weight: WeightDown},
 		{Direction: LEFT, Weight: WeightLeft},
 		{Direction: RIGHT, Weight: WeightRight},
 	}
+
+	return weights
 }
 
 func GoStraightHeuristic(gameState *GameState) WeightedDirections {
@@ -313,5 +329,15 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 		{Weight: int(controlDown / maxControl * 100), Direction: DOWN},
 	}
 
+	return weightedDirections
+}
+
+func FillSmallSpace(gameState *GameState) WeightedDirections {
+	weightedDirections := []WeightedDirection{}
+	return weightedDirections
+}
+
+func OrthogonalCutOff(gameState *GameState) WeightedDirections {
+	weightedDirections := []WeightedDirection{}
 	return weightedDirections
 }
