@@ -1,4 +1,4 @@
-package main
+package snek
 
 func (s Snake) Head() Point {
 	return Point{s.Coords[0][0], s.Coords[0][1]}

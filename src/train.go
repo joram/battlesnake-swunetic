@@ -6,26 +6,33 @@ import (
 	"time"
 )
 
-func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) {
+func TrainAgainstSnek(numGamesPerGeneration int, bestQualitySoFar float64) float64 {
 	start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
-	snake.Mutate(3)
+	bestWeights := snake.GetWeights()
+	snake.Mutate(5)
 	snek := NewSnekSnake()
 	snakeAIs := []SnakeAI{snake, snek}
 	snakeNames := []string{heuristicSnakeId, "snek"}
 
+	averageTurns := -1
 	games := RunGames(snakeAIs, snakeNames, numGamesPerGeneration)
 	qualities := SnakeQualities(games)
 	heuristicQuality := qualities[heuristicSnakeId]
-	bestWeights := map[string]int{}
 	if heuristicQuality > bestQualitySoFar {
 		bestWeights = snake.GetWeights()
 		StoreWeights(bestWeights)
-	} else {
-		bestWeights = map[string]int{}
+
+		averageTurns = 0
+		for _, game := range games {
+			averageTurns += game.currentGameState.Turn
+		}
+		averageTurns = averageTurns / len(games)
+
 	}
-	LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start))
+	LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), heuristicQuality, averageTurns)
+	return heuristicQuality
 }
 
 func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int) []*Game {

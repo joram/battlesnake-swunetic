@@ -65,7 +65,10 @@ func (a *AStar) previousStep(to *Point) *Point {
 }
 
 func (a *AStar) pathTo(to *Point) []*Point {
+	a.pathToCacheLock.Lock()
 	path := a.pathToCache[*to]
+	a.pathToCacheLock.Unlock()
+
 	if len(path) > 0 {
 		return path
 	}
@@ -87,6 +90,8 @@ func (a *AStar) pathTo(to *Point) []*Point {
 		}
 	}
 
+	a.pathToCacheLock.Lock()
 	a.pathToCache[*to] = path
+	a.pathToCacheLock.Unlock()
 	return path
 }

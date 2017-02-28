@@ -1,4 +1,4 @@
-package main
+package snek
 
 import (
 	"github.com/stretchr/testify/assert"

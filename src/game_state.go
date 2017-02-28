@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
-	"time"
 )
 
 func NewGameState(mr MoveRequest) GameState {
@@ -34,14 +32,15 @@ func NewGameState(mr MoveRequest) GameState {
 	}
 
 	gameState := GameState{
-		Snakes:  snakes,
-		Width:   mr.Width,
-		Height:  mr.Height,
-		Turn:    mr.Turn,
-		Food:    foods,
-		winners: []SnakeAI{},
-		state:   "running",
-		You:     mr.You,
+		Snakes:     snakes,
+		Width:      mr.Width,
+		Height:     mr.Height,
+		Turn:       mr.Turn,
+		Food:       foods,
+		winners:    []SnakeAI{},
+		state:      "running",
+		You:        mr.You,
+		DiedOnTurn: map[string]int{},
 	}
 
 	gameState.generateAStar()
@@ -51,14 +50,9 @@ func NewGameState(mr MoveRequest) GameState {
 func (gameState *GameState) generateAStar() {
 	gameState.aStar = map[string]*AStar{}
 
-	start := time.Now()
 	for _, snake := range gameState.Snakes {
 		gameState.aStar[snake.Id] = NewAStar(gameState, snake.Head())
 	}
-	if time.Since(start) > 500*time.Millisecond {
-		fmt.Printf("Calculated snake A*'s in %v\n", time.Since(start))
-	}
-
 }
 
 func (gameState *GameState) MySnake() *Snake {
@@ -97,15 +91,16 @@ func (gameState *GameState) String() string {
 
 func (gameState *GameState) NextGameState() *GameState {
 	nextGameState := GameState{
-		Turn:     gameState.Turn + 1,
-		SnakeAIs: gameState.SnakeAIs,
-		Snakes:   gameState.Snakes,
-		Width:    gameState.Width,
-		Height:   gameState.Height,
-		Food:     gameState.Food,
-		winners:  gameState.winners,
-		state:    gameState.state,
-		You:      gameState.You,
+		Turn:       gameState.Turn + 1,
+		SnakeAIs:   gameState.SnakeAIs,
+		Snakes:     gameState.Snakes,
+		Width:      gameState.Width,
+		Height:     gameState.Height,
+		Food:       gameState.Food,
+		winners:    gameState.winners,
+		state:      gameState.state,
+		You:        gameState.You,
+		DiedOnTurn: gameState.DiedOnTurn,
 	}
 
 	// get all moves
@@ -169,7 +164,7 @@ func (gameState *GameState) UpdateFood(foodEaten []Point) {
 	}
 
 	// spawn food
-	for len(gameState.Food) < len(gameState.Food) {
+	for i := 0; i < len(foodEaten); i++ {
 		gameState.SpawnFood()
 	}
 }
@@ -178,16 +173,14 @@ func (gameState *GameState) CheckWinStates() {
 	numSnakes := len(gameState.Snakes)
 	if numSnakes == 1 {
 		gameState.state = "Won"
-		gameState.winners = []SnakeAI{
-			gameState.GetHeuristicSnake(gameState.Snakes[0].Id),
-		}
+		snake := gameState.Snakes[0]
+		gameState.MarkSnakeAsWinner(snake.Id)
 	}
 	if numSnakes == 0 {
 		gameState.state = "Draw"
 		gameState.winners = []SnakeAI{}
 		for _, snake := range gameState.Snakes {
-			heuristicSnake := gameState.GetHeuristicSnake(snake.Id)
-			gameState.winners = append(gameState.winners, heuristicSnake)
+			gameState.KillSnake(snake.Id)
 		}
 	}
 }
@@ -224,54 +217,6 @@ func (gameState *GameState) IsEmpty(point *Point) bool {
 	return !gameState.IsSolid(point, "")
 }
 
-func (gameState *GameState) ShortestPathsToFood(from *Point) [][]*Point {
-	paths := [][]*Point{}
-	for _, food := range gameState.Food {
-		println("finding shortest path to food")
-		path := gameState.shortestPathTo(from, &food, []*Point{})
-		println("found shortest path to food")
-		paths = append(paths, path)
-	}
-	return paths
-}
-
-func (gameState *GameState) shortestPathTo(from *Point, to *Point, haveVisited []*Point) []*Point {
-
-	if from.Equals(*to) {
-		return []*Point{}
-	}
-
-	options := [][]*Point{}
-	haveVisited = append(haveVisited, from)
-	for _, neighbour := range from.Neighbours() {
-		if gameState.IsEmpty(neighbour) {
-			visited := false
-			for _, visitedPoint := range haveVisited {
-				if visitedPoint.Equals(*neighbour) {
-					visited = true
-					break
-				}
-			}
-			if !visited {
-				pathFromNeighbour := gameState.shortestPathTo(neighbour, to, haveVisited)
-				if pathFromNeighbour != nil {
-					options = append(options, pathFromNeighbour)
-				}
-			}
-
-		}
-	}
-
-	var shortestOption []*Point
-	for _, option := range options {
-		if shortestOption == nil || len(option) < len(shortestOption) {
-			shortestOption = option
-		}
-	}
-
-	return append(shortestOption, from)
-}
-
 func (gameState *GameState) IsSolid(point *Point, ignoreSnakeHead string) bool {
 	if point.X < 0 || point.X >= gameState.Width {
 		return true
@@ -293,7 +238,8 @@ func (gameState *GameState) IsSolid(point *Point, ignoreSnakeHead string) bool {
 	return false
 }
 
-func (gameState *GameState) KillSnake(snakeId string) {
+func (gameState *GameState) RemoveSnake(snakeId string) {
+	// remove snake
 	newSnakes := []*Snake{}
 	for _, snake := range gameState.Snakes {
 		if snake.Id != snakeId {
@@ -301,24 +247,17 @@ func (gameState *GameState) KillSnake(snakeId string) {
 		}
 	}
 	gameState.Snakes = newSnakes
+}
 
-	for _, snake := range gameState.SnakeAIs {
-		if snakeId == snake.GetId() {
-			snake.SetDiedOnTurn(gameState.Turn)
-			gameState.losers = append(gameState.losers, snake)
-			break
-		}
-	}
+func (gameState *GameState) KillSnake(snakeId string) {
+	gameState.losers = append(gameState.losers, gameState.GetSnakeAI(snakeId))
+	gameState.RemoveSnake(snakeId)
+	gameState.DiedOnTurn[snakeId] = gameState.Turn
 }
 
 func (gameState *GameState) MarkSnakeAsWinner(snakeId string) {
-	for i, snake := range gameState.SnakeAIs {
-		if gameState.Snakes[i].Id == snakeId {
-			snake.SetDiedOnTurn(gameState.Turn)
-			gameState.winners = append(gameState.winners, snake)
-			break
-		}
-	}
+	gameState.winners = append(gameState.winners, gameState.GetSnakeAI(snakeId))
+	gameState.RemoveSnake(snakeId)
 }
 
 func (gameState *GameState) GetSnake(snakeId string) *Snake {
@@ -330,10 +269,10 @@ func (gameState *GameState) GetSnake(snakeId string) *Snake {
 	return nil
 }
 
-func (gameState *GameState) GetHeuristicSnake(snakeId string) SnakeAI {
-	for i, _ := range gameState.SnakeAIs {
-		if gameState.Snakes[i].Id == snakeId {
-			return gameState.SnakeAIs[i]
+func (gameState *GameState) GetSnakeAI(snakeId string) SnakeAI {
+	for _, snakeAI := range gameState.SnakeAIs {
+		if snakeAI.GetId() == snakeId {
+			return snakeAI
 		}
 	}
 	return nil

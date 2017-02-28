@@ -1,4 +1,4 @@
-package main
+package snek
 
 type GameStartRequest struct {
 	GameId string `json:"game_id"`
