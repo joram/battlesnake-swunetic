@@ -119,6 +119,7 @@ type AStar struct {
 	visited         map[Point]bool
 	pathToCache     map[Point][]*Point
 	pathToCacheLock sync.Mutex
+	canVisitCount   int
 }
 
 type AStarPoint struct {

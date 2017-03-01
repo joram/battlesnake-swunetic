@@ -208,6 +208,67 @@ func MoveTo(gameState *GameState, goals []*Point) WeightedDirections {
 	}
 }
 
+func StraightLineAgressionHeuristic(gameState *GameState) WeightedDirections {
+	Weights := map[string]int{
+		UP:    0,
+		DOWN:  0,
+		LEFT:  0,
+		RIGHT: 0,
+	}
+	me := gameState.MySnake()
+
+	for _, them := range gameState.OtherSnakes() {
+		currHead := *me.Head()
+		for _, directionStr := range []string{UP, DOWN, LEFT, RIGHT} {
+			direction := directionVector(directionStr)
+			path := []Point{}
+			canHitSolid := false
+			for gameState.IsEmpty(&currHead) || len(path) == 0 {
+				currHead = currHead.Add(direction)
+				if !gameState.IsEmpty(&currHead) && len(path) > 0 {
+					canHitSolid = true
+					break
+				}
+				if gameState.aStar[me.Id].turnsTo[currHead] < gameState.aStar[them.Id].turnsTo[currHead] {
+					path = append(path, currHead)
+				} else {
+					canHitSolid = false
+					break
+				}
+			}
+
+			if canHitSolid {
+				futureGameState := *gameState
+				futureMe := futureGameState.MySnake()
+				futureMe.Coords = append(futureMe.Coords, path...)
+				theirAStar := NewAStar(&futureGameState, them.Head())
+				if theirAStar.canVisitCount < gameState.aStar[them.Id].canVisitCount/2 {
+					Weights[directionStr] += 1
+				}
+
+			}
+		}
+	}
+
+	maxWeight := Weights[UP]
+	for _, directionStr := range []string{DOWN, LEFT, RIGHT} {
+		if Weights[directionStr] > maxWeight {
+			maxWeight = Weights[directionStr]
+		}
+	}
+
+	options := []WeightedDirection{}
+	if maxWeight > 0 {
+		options = []WeightedDirection{
+			{UP, Weights[UP] * 100 / maxWeight},
+			{DOWN, Weights[DOWN] * 100 / maxWeight},
+			{LEFT, Weights[LEFT] * 100 / maxWeight},
+			{RIGHT, Weights[RIGHT] * 100 / maxWeight},
+		}
+	}
+	return options
+}
+
 func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 
 	mySnake := gameState.MySnake()
