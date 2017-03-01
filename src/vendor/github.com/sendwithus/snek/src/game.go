@@ -22,8 +22,26 @@ func (m MoveRequest) GenerateMove() string {
 	}
 
 	foodVectors := m.GetFoodVectors()
-	if snake.HealthPoints < 35 || foodVectors[0].Magnitude() < 5 {
+	if snake.HealthPoints < 35 || foodVectors[0].Magnitude() < 7 || len(foodVectors) <= 1 {
 		dir := m.FindMoveToNearestFood()
+		if dir != NOOP {
+			return dir
+		}
+	}
+
+	// try and head towards the smallest snake
+	smallestSnake := Snake{}
+	for _, snake := range m.Snakes {
+		if len(smallestSnake.Coords) == 0 {
+			smallestSnake = snake
+		} else if len(smallestSnake.Coords) >= len(snake.Coords) {
+			smallestSnake = snake
+		}
+	}
+
+	if !smallestSnake.Head().Equals(m.MySnake().Head()) {
+		directionVector := m.MySnake().Head().DistanceTo(smallestSnake.Head())
+		dir := directionVector.GetValidDirectionFrom(m)
 		if dir != NOOP {
 			return dir
 		}
@@ -87,17 +105,8 @@ func (m MoveRequest) GetFoodVectors() Vectors {
 func (m MoveRequest) FindMoveToNearestFood() string {
 	vectors := m.GetFoodVectors()
 	for _, closestFood := range vectors {
-		dir := NOOP
-		if closestFood.X < 0 {
-			dir = LEFT
-		} else if closestFood.X > 0 {
-			dir = RIGHT
-		} else if closestFood.Y > 0 {
-			dir = DOWN
-		} else if closestFood.Y < 0 {
-			dir = UP
-		}
-		if m.IsValidMove(dir, true) {
+		dir := closestFood.GetValidDirectionFrom(m)
+		if dir != NOOP {
 			return dir
 		}
 	}

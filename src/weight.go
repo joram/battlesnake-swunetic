@@ -31,30 +31,17 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 }
 
 func SnakeQualities(games []*Game) map[string]float64 {
-	snakeQuality := make(map[string]float64)
+	snakeWins := make(map[string]float64)
+	for _, snake := range games[0].currentGameState.Snakes {
+		snakeWins[snake.Id] = 0
+	}
 	for _, game := range games {
-		diedOnTurn := 0
 		for _, snake := range game.currentGameState.winners {
-			diedOnTurn = game.currentGameState.Turn
-			snake = game.currentGameState.GetSnakeAI(snake.GetId())
-			snakeQuality[snake.GetId()] += float64(diedOnTurn + game.currentGameState.Turn)
-		}
-		for _, snake := range game.currentGameState.losers {
-			diedOnTurn = game.currentGameState.DiedOnTurn[snake.GetId()]
-			snakeQuality[snake.GetId()] += float64(diedOnTurn + game.currentGameState.Turn/4)
+			snakeWins[snake.GetId()] += 1
 		}
 	}
 
-	totalQuality := float64(0)
-	for _, quality := range snakeQuality {
-		totalQuality += quality
-	}
-
-	for snakeId, quality := range snakeQuality {
-		snakeQuality[snakeId] = quality / totalQuality
-	}
-
-	return snakeQuality
+	return snakeWins
 }
 
 func PrimeWeightsCache() {
