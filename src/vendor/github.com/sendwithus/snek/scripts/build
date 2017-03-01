@@ -9,6 +9,6 @@ if [ ! -d "pkg" ]; then
     mkdir pkg
 fi
 
-docker run --rm -v "$PWD"/src:/go/src/github.com/sendwithus/dsnek -v "$PWD"/pkg:/go/pkg -v "$PWD"/bin:/go/bin \
-    -w /go/src/github.com/sendwithus/dsnek golang:1.7-alpine go install -v || exit 1;
+docker run --rm -v "$PWD"/src:/go/src/github.com/sendwithus/snek -v "$PWD"/pkg:/go/pkg -v "$PWD"/bin:/go/bin \
+    -w /go/src/github.com/sendwithus/snek golang:1.7-alpine go install -v || exit 1;
 
