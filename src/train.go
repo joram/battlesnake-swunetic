@@ -8,7 +8,7 @@ import (
 )
 
 func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar float64) float64 {
-	//start := time.Now()
+	start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
 	bestWeights := snake.GetWeights()
