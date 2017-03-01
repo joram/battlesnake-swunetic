@@ -48,7 +48,7 @@ func main() {
 		bestQuality := TrainAgainstSnek(200, 0, float64(0))
 		fmt.Printf("starting quality: %v", bestQuality)
 		for {
-			quality := TrainAgainstSnek(200, 2, bestQuality)
+			quality := TrainAgainstSnek(200, 5, bestQuality)
 			if quality > bestQuality {
 				bestQuality = quality
 			}
