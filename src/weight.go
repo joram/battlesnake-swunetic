@@ -24,7 +24,7 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 		"sample#games.Count=%v sample#games.ElapsedTime=%v sample#games.Quality=%v, sample#games.AverageTurns=%v",
 		numGames,
 		duration,
-		quality*float64(100),
+		quality,
 		averageTurns,
 	)
 	println(s)
