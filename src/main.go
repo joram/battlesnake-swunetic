@@ -47,7 +47,7 @@ func main() {
 		log.Println("Simulate a game to train swunetics!")
 		bestQuality := TrainAgainstSnek(500, 0, float64(0))
 		for {
-			quality := TrainAgainstSnek(500, 5, bestQuality)
+			quality := TrainAgainstSnek(500, 2, bestQuality)
 			if quality > bestQuality {
 				bestQuality = quality
 			}
