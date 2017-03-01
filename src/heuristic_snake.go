@@ -112,10 +112,12 @@ func (snake HeuristicSnake) Move(gameState *GameState) string {
 	go sortWeightsMap(weights, ch)
 
 	for weightedDirection := range ch {
-		//head := gameState.MySnake().Coords[0]
-		//directionOfMovement := directionVector(weightedDirection.Direction)
-		//possibleNewHead := head.Add(directionOfMovement)
-		return weightedDirection.Direction
+		head := gameState.MySnake().Coords[0]
+		directionOfMovement := directionVector(weightedDirection.Direction)
+		possibleNewHead := head.Add(directionOfMovement)
+		if gameState.IsEmpty(&possibleNewHead) {
+			return weightedDirection.Direction
+		}
 	}
 
 	return NOOP
