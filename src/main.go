@@ -45,9 +45,10 @@ func main() {
 		http.ListenAndServe(":"+port, nil)
 	} else {
 		log.Println("Simulate a game to train swunetics!")
-		bestQuality := TrainAgainstSnek(500, 0, float64(0))
+		bestQuality := TrainAgainstSnek(200, 0, float64(0))
+		fmt.Printf("starting quality: %v", bestQuality)
 		for {
-			quality := TrainAgainstSnek(500, 2, bestQuality)
+			quality := TrainAgainstSnek(200, 2, bestQuality)
 			if quality > bestQuality {
 				bestQuality = quality
 			}
