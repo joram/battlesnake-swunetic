@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 	_ "time"
 )
 
@@ -29,7 +30,7 @@ func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar 
 			averageTurns += game.currentGameState.Turn
 		}
 		averageTurns = averageTurns / len(games)
-		//LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), heuristicQuality, averageTurns)
+		LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), heuristicQuality, averageTurns)
 		fmt.Printf("\n\t%.2f%% wins ", heuristicQuality/float64(len(games))*100)
 	} else {
 		print(".")
