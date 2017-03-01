@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 )
@@ -175,7 +176,15 @@ func MoveTo(gameState *GameState, goals []*Point) WeightedDirections {
 	head := snake.Coords[0]
 
 	for _, goal := range goals {
-		path := gameState.aStart[snake.Id].pathTo(goal)
+		aStar, set := gameState.aStar[snake.Id]
+		if !set {
+			for _, snakeId := range gameState.aStar {
+				fmt.Printf("\t%v", snakeId)
+			}
+			println("couldn't find aStar for ", snake.Id)
+			continue
+		}
+		path := aStar.pathTo(goal)
 
 		direction := path[0].Subtract(head)
 		if direction == directionVector(UP) {
@@ -222,7 +231,7 @@ func GoStraightHeuristic(gameState *GameState) WeightedDirections {
 	for _, direction := range allDirections {
 		if directionOfMovement.Equals(directionVector(direction)) {
 			possibleNewHead := head.Add(directionOfMovement)
-			if !gameState.IsSolid(&possibleNewHead, mySnake.Id) {
+			if !gameState.IsPossiblySolid(&possibleNewHead, mySnake.Id) {
 				return []WeightedDirection{{Direction: direction, Weight: 50}}
 			}
 		}
@@ -244,7 +253,7 @@ func RandomHeuristic(gameState *GameState) WeightedDirections {
 	for _, direction := range allDirections {
 		directionOfMovement := directionVector(direction)
 		possibleNewHead := head.Add(directionOfMovement)
-		if !gameState.IsSolid(&possibleNewHead, mySnake.Id) {
+		if !gameState.IsPossiblySolid(&possibleNewHead, mySnake.Id) {
 			validDirections = append(validDirections, direction)
 		}
 	}
@@ -258,7 +267,7 @@ func RandomHeuristic(gameState *GameState) WeightedDirections {
 }
 
 func BoardControl(gameState *GameState, start *Point) float64 {
-	if !gameState.IsEmpty(start) {
+	if gameState.IsPossiblySolid(start, "") {
 		return float64(0)
 	}
 	toVisit := []*Point{start}
@@ -268,7 +277,7 @@ func BoardControl(gameState *GameState, start *Point) float64 {
 		toVisit = toVisit[:len(toVisit)-1]
 		haveVisited = append(haveVisited, p)
 		for _, neighbour := range p.Neighbours() {
-			if gameState.IsEmpty(neighbour) {
+			if !gameState.IsPossiblySolid(neighbour, "") {
 				shouldCheck := true
 
 				for _, visitedPoint := range haveVisited {
@@ -305,6 +314,10 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 	controlUp := BoardControl(gameState, head.Up())
 	controlDown := BoardControl(gameState, head.Down())
 	maxControl := math.Max(controlLeft, math.Max(controlRight, math.Max(controlUp, controlDown)))
+	minControl := math.Min(controlLeft, math.Min(controlRight, math.Min(controlUp, controlDown)))
+	if maxControl == minControl {
+		return []WeightedDirection{}
+	}
 
 	weightedDirections := []WeightedDirection{
 		{Weight: int(controlLeft / maxControl * 100), Direction: LEFT},

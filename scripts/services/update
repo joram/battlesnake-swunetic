@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker pull stembolt/battle_snake:latest

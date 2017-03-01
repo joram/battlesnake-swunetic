@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+#? build app
+
+if [ ! -d "bin" ]; then
+    mkdir bin
+fi
+
+if [ ! -d "pkg" ]; then
+    mkdir pkg
+fi
+
+docker run --rm -v "$PWD"/src:/go/src/github.com/sendwithus/dsnek -v "$PWD"/pkg:/go/pkg -v "$PWD"/bin:/go/bin \
+    -w /go/src/github.com/sendwithus/dsnek golang:1.7-alpine go install -v || exit 1;
+

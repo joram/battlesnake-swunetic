@@ -19,10 +19,16 @@ func main() {
 	redisConnectionPool = NewPool()
 
 	if *setWeightsFlag {
-		weights := map[string]float64{}
+		weights := map[string]int{}
 		weights["hug-walls"] = 0
 		weights["straight"] = 0
+		weights["random"] = 0
+		weights["control"] = 100
 		weights["nearest-food"] = 100
+		weights["agressive"] = 100
+		weights["attempt-kill"] = 100
+		weights["avoid-death"] = 100
+
 		StoreWeights(weights)
 		fmt.Printf("Wrote: %v", weights)
 		return
@@ -34,13 +40,17 @@ func main() {
 		if port == "" {
 			port = "9000"
 		}
-
+		PrimeWeightsCache()
 		log.Printf("Running server on port %s...\n", port)
 		http.ListenAndServe(":"+port, nil)
 	} else {
 		log.Println("Simulate a game to train swunetics!")
+		bestQuality := TrainAgainstSnek(500, 0, float64(0))
 		for {
-			Train(2, 10)
+			quality := TrainAgainstSnek(500, 5, bestQuality)
+			if quality > bestQuality {
+				bestQuality = quality
+			}
 		}
 	}
 }

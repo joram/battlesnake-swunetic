@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -27,11 +28,14 @@ func start(w http.ResponseWriter, r *http.Request) {
 func move(w http.ResponseWriter, r *http.Request) {
 	var requestData MoveRequest
 	json.NewDecoder(r.Body).Decode(&requestData)
-	snake := NewHeuristicSnake(requestData.GameId)
+	snake := NewHeuristicSnake(requestData.You)
 	gameState := NewGameState(requestData)
+	gameState.SnakeAIs = []SnakeAI{snake}
+
 	responseData := MoveResponse{
 		Move: snake.Move(&gameState),
 	}
+	fmt.Printf("%v\n", responseData.Move)
 	b, err := json.Marshal(responseData)
 	if err != nil {
 		log.Fatalf("%v", err)

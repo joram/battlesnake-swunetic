@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#? run app
+
+swu build || exit 1
+
+docker run -p 9001:9001 --rm --network="sendwithus.local" --env-file scripts/.env \
+    -v "$PWD"/src:/go/src/github.com/sendwithus/dsnek -v "$PWD"/bin:/go/bin -v "$PWD"/pkg:/go/pkg \
+    -w /go/src/github.com/sendwithus/dsnek golang:1.7-alpine /go/bin/dsnek $@

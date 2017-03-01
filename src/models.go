@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type GameStartRequest struct {
 	GameId string `json:"game_id"`
@@ -46,18 +49,19 @@ type Game struct {
 }
 
 type GameState struct {
-	HeuristicSnakes []*HeuristicSnake
-	Snakes          []*Snake
-	Height          int
-	Width           int
-	Turn            int
-	Food            []Point
-	state           string
-	all             []*HeuristicSnake
-	winners         []*HeuristicSnake
-	losers          []*HeuristicSnake
-	You             string
-	aStart          map[string]*AStar
+	SnakeAIs   []SnakeAI
+	all        []SnakeAI
+	winners    []SnakeAI
+	losers     []SnakeAI
+	Snakes     []*Snake
+	Height     int
+	Width      int
+	Turn       int
+	Food       []Point
+	state      string
+	You        string
+	aStar      map[string]*AStar
+	DiedOnTurn map[string]int
 }
 
 type MoveHeuristic func(gameState *GameState) WeightedDirections
@@ -69,10 +73,23 @@ type WeightedHeuristic struct {
 	MoveFunc           MoveHeuristic `json:"-"`
 }
 
+type SnakeAI interface {
+	Move(gameState *GameState) string
+	SetDiedOnTurn(int)
+	GetDiedOnTurn() int
+	GetWeights() map[string]int
+	GetId() string
+	Mutate(int)
+}
+
 type HeuristicSnake struct {
 	Id                 string
 	WeightedHeuristics []*WeightedHeuristic
 	DiedOnTurn         int
+}
+
+type SnekSnake struct {
+	DiedOnTurn int
 }
 
 type Points []*Point
@@ -96,11 +113,12 @@ type PathCalculation struct {
 }
 
 type AStar struct {
-	gameState   *GameState
-	start       *Point
-	turnsTo     map[Point]int
-	visited     map[Point]bool
-	pathToCache map[Point][]*Point
+	gameState       *GameState
+	start           *Point
+	turnsTo         map[Point]int
+	visited         map[Point]bool
+	pathToCache     map[Point][]*Point
+	pathToCacheLock sync.Mutex
 }
 
 type AStarPoint struct {

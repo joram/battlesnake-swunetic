@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func NewGame(name string, numSnakes int, foodFrequency int) *Game {
+func NewGame(name string, snakeNames []string, foodFrequency int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   [][]int{},
 		GameId: "the one and only game atm",
@@ -17,13 +17,12 @@ func NewGame(name string, numSnakes int, foodFrequency int) *Game {
 		You:    "",
 	}
 
-	for i := 0; i < numSnakes; i += 1 {
+	for _, snakeName := range snakeNames {
 		x := rand.Intn(initialMoveRequest.Width)
 		y := rand.Intn(initialMoveRequest.Height)
 		snake := MoveRequestSnake{
-			Id:    fmt.Sprintf("Snake-%v", i),
-			Name:  fmt.Sprintf("Snake-%v", i),
-			Taunt: "poop",
+			Id:   snakeName,
+			Name: snakeName,
 			Coords: [][]int{
 				{x, y},
 				{x, y},
@@ -46,7 +45,7 @@ func NewGame(name string, numSnakes int, foodFrequency int) *Game {
 	}
 }
 
-func (game *Game) Run() []*HeuristicSnake {
+func (game *Game) Run() []SnakeAI {
 	start := time.Now()
 	for {
 		game.currentGameState = game.currentGameState.NextGameState()
