@@ -47,6 +47,36 @@ func NewGameState(mr MoveRequest) GameState {
 	return gameState
 }
 
+func CloneGameState(gs *GameState) GameState {
+	snakes := []*Snake{}
+	for _, s := range gs.Snakes {
+		clonedSnake := Snake{
+			s.Coords,
+			s.HealthPoints,
+			s.Id,
+			s.Name,
+			s.Taunt,
+		}
+		snakes = append(snakes, &clonedSnake)
+	}
+	return GameState{
+		gs.SnakeAIs,
+		gs.all,
+		gs.winners,
+		gs.losers,
+		snakes,
+		gs.Height,
+		gs.Width,
+		gs.Turn,
+		gs.Food,
+		gs.state,
+		gs.You,
+		map[string]*AStar{},
+		gs.DiedOnTurn,
+	}
+
+}
+
 func (gameState *GameState) generateAStar() {
 	gameState.aStar = map[string]*AStar{}
 

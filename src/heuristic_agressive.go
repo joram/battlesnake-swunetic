@@ -100,7 +100,7 @@ func StraightLineAgressionHeuristic(gameState *GameState) WeightedDirections {
 			}
 
 			if canHitSolid {
-				futureGameState := *gameState
+				futureGameState := CloneGameState(gameState)
 				futureMe := futureGameState.MySnake()
 				futureMe.Coords = append(futureMe.Coords, path...)
 				theirAStar := NewAStar(&futureGameState, them.Head())
