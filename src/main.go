@@ -46,7 +46,7 @@ func main() {
 	} else {
 		log.Println("Simulate a game to train swunetics!")
 		numWorkers := 100
-		numGames := 1000
+		numGames := 200
 		numFood := 6
 		bestQuality := TrainAgainstSnek(numGames, 0, numFood, numWorkers, 0)
 		fmt.Printf("\nstarting quality: %v\n", bestQuality)
