@@ -8,14 +8,15 @@ import (
 )
 
 var heuristics = map[string]MoveHeuristic{
-	"nearest-food": NearestFoodHeuristic,
-	"straight":     GoStraightHeuristic,
-	"random":       RandomHeuristic,
-	"control":      BoardControlHeuristic,
-	"agressive":    CollisionHeuristic,
-	"attempt-kill": AimeForCollisionsWithSmallerSnakes,
-	"avoid-death":  AvoidCollisionsWithBiggerSnakes,
-	"hug-walls":    HuggWallsHeuristic,
+	"nearest-food":       NearestFoodHeuristic,
+	"straight":           GoStraightHeuristic,
+	"random":             RandomHeuristic,
+	"control":            BoardControlHeuristic,
+	"agressive":          CollisionHeuristic,
+	"agressive-straight": StraightLineAgressionHeuristic,
+	"attempt-kill":       AimeForCollisionsWithSmallerSnakes,
+	"avoid-death":        AvoidCollisionsWithBiggerSnakes,
+	"hug-walls":          HuggWallsHeuristic,
 }
 
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {

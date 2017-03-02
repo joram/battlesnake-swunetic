@@ -6,10 +6,11 @@ import (
 
 func NewAStar(gameState *GameState, start *Point) *AStar {
 	aStar := AStar{
-		gameState:   gameState,
-		start:       start,
-		turnsTo:     make(map[Point]int),
-		pathToCache: make(map[Point][]*Point),
+		gameState:     gameState,
+		start:         start,
+		turnsTo:       make(map[Point]int),
+		pathToCache:   make(map[Point][]*Point),
+		canVisitCount: 0,
 	}
 	aStar.process()
 	return &aStar
@@ -33,6 +34,7 @@ func (a *AStar) process() {
 	for len(toVisit) > 0 {
 		p := toVisit[0]
 		toVisit = toVisit[1:]
+		a.canVisitCount += 1
 
 		//println("visiting ", p.point.String())
 		for _, neightbour := range p.point.Neighbours() {

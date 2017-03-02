@@ -16,7 +16,7 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 	}
 	sort.Strings(keys)
 
-	s := ""
+	s := "\n"
 	for _, key := range keys {
 		s += fmt.Sprintf("sample#heuristic.%v=%v ", key, int(bestWeights[key]))
 	}
