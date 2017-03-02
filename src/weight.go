@@ -37,7 +37,10 @@ func SnakeQualities(games []*Game) map[string]float64 {
 	}
 	for _, game := range games {
 		for _, snake := range game.currentGameState.winners {
-			snakeWins[snake.GetId()] += 1
+			snakeWins[snake.GetId()] += float64(game.currentGameState.Turn)
+		}
+		for _, snake := range game.currentGameState.losers {
+			snakeWins[snake.GetId()] += float64(game.currentGameState.Turn) / 2
 		}
 	}
 

@@ -30,13 +30,26 @@ func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount
 		}
 		averageTurns = averageTurns / len(games)
 
-		winPercent := heuristicQuality / float64(len(games)) * 100
+		winPercent := WinPercent(games, heuristicSnakeId)
 		LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), winPercent, averageTurns)
 		fmt.Printf("\n\t%.2f%% wins ", winPercent)
 	} else {
 		print(".")
 	}
 	return heuristicQuality
+}
+
+func WinPercent(games []*Game, snakeId string) float64 {
+	count := float64(0)
+	for _, game := range games {
+		for _, winner := range game.currentGameState.winners {
+			if winner.GetId() == snakeId {
+				count += 1
+			}
+		}
+	}
+
+	return count * float64(100) / float64(len(games))
 }
 
 func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, amountOfFood, workerCount int) []*Game {
@@ -69,6 +82,10 @@ func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, am
 		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, amountOfFood)
 		game.currentGameState.SnakeAIs = snakeAIs
 		gamesChan <- game
+	}
+
+	for len(games) < numGamesPerGeneration {
+		time.Sleep(time.Millisecond)
 	}
 
 	return games
