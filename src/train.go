@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 	_ "time"
 )
@@ -41,19 +40,37 @@ func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar 
 }
 
 func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int) []*Game {
-	games := []*Game{}
+	doneGamesChan := make(chan *Game)
+	gamesChan := make(chan *Game)
 
-	wg := sync.WaitGroup{}
-	wg.Add(numGamesPerGeneration)
+	games := []*Game{}
+	go func() {
+		for game := range doneGamesChan {
+			games = append(games, game)
+			if len(games) >= numGamesPerGeneration {
+				close(gamesChan)
+				close(doneGamesChan)
+			}
+		}
+	}()
+
+	// run 10 games in parallel
+	workersCount := 10
+	for i := 0; i < workersCount; i++ {
+		go func() {
+			for game := range gamesChan {
+				game.Run()
+				doneGamesChan <- game
+			}
+		}()
+	}
+
+	// add games
 	for i := 0; i < numGamesPerGeneration; i++ {
 		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, 1)
 		game.currentGameState.SnakeAIs = snakeAIs
-		games = append(games, game)
-		go func(game *Game, wg *sync.WaitGroup) {
-			game.Run()
-			wg.Done()
-		}(game, &wg)
+		gamesChan <- game
 	}
-	wg.Wait()
+
 	return games
 }
