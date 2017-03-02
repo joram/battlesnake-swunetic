@@ -123,7 +123,7 @@ func (snake HeuristicSnake) Move(gameState *GameState) string {
 			weightsVsSolid[weightedDirection.Direction] = false
 		}
 	}
-	fmt.Printf("no-op-ing with %v %v\n", weights, weightsVsSolid)
+	//fmt.Printf("no-op-ing with %v %v\n", weights, weightsVsSolid)
 
 	return NOOP
 }
