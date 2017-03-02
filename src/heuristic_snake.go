@@ -107,7 +107,7 @@ func (snake HeuristicSnake) Move(gameState *GameState) string {
 			weights[wd.Direction] += wd.Weight * wh.Weight
 		}
 	}
-	weights[NOOP] = 0
+	delete(weights, NOOP)
 
 	ch := make(chan WeightedDirection)
 	go sortWeightsMap(weights, ch)
