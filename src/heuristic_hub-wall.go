@@ -2,7 +2,11 @@ package main
 
 func HuggWallsHeuristic(gameState *GameState) WeightedDirections {
 	me := gameState.MySnake()
-	head := me.Coords[0]
+	head := me.Head()
+	if head == nil {
+		return []WeightedDirection{}
+	}
+
 	surroundingWallCountUp := gameState.CountSurroundingWalls(head.Up())
 	surroundingWallCountDown := gameState.CountSurroundingWalls(head.Down())
 	surroundingWallCountLeft := gameState.CountSurroundingWalls(head.Left())

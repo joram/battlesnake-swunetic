@@ -16,5 +16,8 @@ func (snake *Snake) Length() int {
 }
 
 func (snake *Snake) Head() *Point {
+	if len(snake.Coords) == 0 {
+		return nil
+	}
 	return &snake.Coords[0]
 }
