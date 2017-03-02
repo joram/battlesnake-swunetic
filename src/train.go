@@ -55,7 +55,7 @@ func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int
 	}()
 
 	// run 10 games in parallel
-	workersCount := 10
+	workersCount := 1
 	for i := 0; i < workersCount; i++ {
 		go func() {
 			for game := range gamesChan {
