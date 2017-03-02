@@ -120,6 +120,7 @@ func (snake HeuristicSnake) Move(gameState *GameState) string {
 			return weightedDirection.Direction
 		}
 	}
+	fmt.Printf("no-op-ing with %v\n", weights)
 
 	return NOOP
 }
