@@ -6,7 +6,7 @@ import (
 	_ "time"
 )
 
-func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar float64) float64 {
+func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount int, bestQualitySoFar float64) float64 {
 	start := time.Now()
 	heuristicSnakeId := "MutatedSnake"
 	snake := NewHeuristicSnake(heuristicSnakeId)
@@ -17,7 +17,7 @@ func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar 
 	snakeNames := []string{heuristicSnakeId, "snek"}
 
 	averageTurns := -1
-	games := RunGames(snakeAIs, snakeNames, numGamesPerGeneration)
+	games := RunGames(snakeAIs, snakeNames, numGamesPerGeneration, amountOfFood, workerCount)
 	qualities := SnakeQualities(games)
 	heuristicQuality := qualities[heuristicSnakeId]
 	if heuristicQuality > bestQualitySoFar {
@@ -39,7 +39,7 @@ func TrainAgainstSnek(numGamesPerGeneration int, mutation int, bestQualitySoFar 
 	return heuristicQuality
 }
 
-func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int) []*Game {
+func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, amountOfFood, workerCount int) []*Game {
 	doneGamesChan := make(chan *Game)
 	gamesChan := make(chan *Game)
 
@@ -55,8 +55,7 @@ func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int
 	}()
 
 	// run 10 games in parallel
-	workersCount := 1
-	for i := 0; i < workersCount; i++ {
+	for i := 0; i < workerCount; i++ {
 		go func() {
 			for game := range gamesChan {
 				game.Run()
@@ -67,7 +66,7 @@ func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration int
 
 	// add games
 	for i := 0; i < numGamesPerGeneration; i++ {
-		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, 1)
+		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, amountOfFood)
 		game.currentGameState.SnakeAIs = snakeAIs
 		gamesChan <- game
 	}

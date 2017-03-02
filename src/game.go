@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func NewGame(name string, snakeNames []string, foodFrequency int) *Game {
+func NewGame(name string, snakeNames []string, amountOfFood int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   [][]int{},
 		GameId: "the one and only game atm",
@@ -34,13 +34,13 @@ func NewGame(name string, snakeNames []string, foodFrequency int) *Game {
 	}
 
 	initialGameState := NewGameState(initialMoveRequest)
-	for i := 0; i < foodFrequency; i++ {
+	for i := 0; i < amountOfFood; i++ {
 		initialGameState.SpawnFood()
 	}
 
 	return &Game{
 		currentGameState: &initialGameState,
-		foodFrequency:    foodFrequency,
+		foodFrequency:    amountOfFood,
 		name:             name,
 	}
 }
