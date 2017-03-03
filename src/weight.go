@@ -30,23 +30,6 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 	println(s)
 }
 
-func SnakeQualities(games []Game) map[string]float64 {
-	snakeWins := make(map[string]float64)
-	for _, snake := range games[0].currentGameState.Snakes {
-		snakeWins[snake.Id] = 0
-	}
-	for _, game := range games {
-		for _, snake := range game.currentGameState.winners {
-			snakeWins[snake.GetId()] += float64(game.currentGameState.Turn)
-		}
-		for _, snake := range game.currentGameState.losers {
-			snakeWins[snake.GetId()] += float64(game.currentGameState.Turn) / 2
-		}
-	}
-
-	return snakeWins
-}
-
 func PrimeWeightsCache() {
 	for name, _ := range heuristics {
 		weight := getWeight(name)

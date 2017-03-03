@@ -51,6 +51,16 @@ func WinPercent(games []Game, snakeId string) float64 {
 	return count * float64(100) / float64(len(games))
 }
 
+func SnakeQualities(games []Game) map[string]float64 {
+
+	snakeWins := make(map[string]float64)
+	for _, snake := range games[0].currentGameState.Snakes {
+		snakeWins[snake.Id] = WinPercent(games, snake.Id)
+	}
+
+	return snakeWins
+}
+
 func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, amountOfFood, workerCount int) []Game {
 	doneGamesChan := make(chan *Game)
 	gamesChan := make(chan *Game)
