@@ -13,8 +13,8 @@ func AimeForCollisionsWithSmallerSnakes(gameState *GameState) WeightedDirections
 	weightedDirections := WeightedDirections{}
 
 	option := me.Coords[0].Up()
-	for _, pointToAvoid := range pointsToAimeFor {
-		if pointToAvoid.Equals(*option) {
+	for _, pointToAimeFor := range pointsToAimeFor {
+		if pointToAimeFor.Equals(*option) {
 			weightedDirections = append(weightedDirections, WeightedDirection{
 				Direction: UP,
 				Weight:    100,
@@ -24,8 +24,8 @@ func AimeForCollisionsWithSmallerSnakes(gameState *GameState) WeightedDirections
 	}
 
 	option = me.Coords[0].Down()
-	for _, pointToAvoid := range pointsToAimeFor {
-		if pointToAvoid.Equals(*option) {
+	for _, pointToAimeFor := range pointsToAimeFor {
+		if pointToAimeFor.Equals(*option) {
 			weightedDirections = append(weightedDirections, WeightedDirection{
 				Direction: DOWN,
 				Weight:    100,
@@ -35,8 +35,8 @@ func AimeForCollisionsWithSmallerSnakes(gameState *GameState) WeightedDirections
 	}
 
 	option = me.Coords[0].Left()
-	for _, pointToAvoid := range pointsToAimeFor {
-		if pointToAvoid.Equals(*option) {
+	for _, pointToAimeFor := range pointsToAimeFor {
+		if pointToAimeFor.Equals(*option) {
 			weightedDirections = append(weightedDirections, WeightedDirection{
 				Direction: LEFT,
 				Weight:    100,
@@ -46,8 +46,8 @@ func AimeForCollisionsWithSmallerSnakes(gameState *GameState) WeightedDirections
 	}
 
 	option = me.Coords[0].Right()
-	for _, pointToAvoid := range pointsToAimeFor {
-		if pointToAvoid.Equals(*option) {
+	for _, pointToAimeFor := range pointsToAimeFor {
+		if pointToAimeFor.Equals(*option) {
 			weightedDirections = append(weightedDirections, WeightedDirection{
 				Direction: RIGHT,
 				Weight:    100,
