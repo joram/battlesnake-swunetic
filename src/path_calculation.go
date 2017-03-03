@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"sync"
 )
 
 func NewAStar(gameState *GameState, start *Point) AStar {
@@ -65,8 +66,16 @@ func (a *AStar) previousStep(to *Point) *Point {
 	return next
 }
 
+var pathToCacheLock sync.Mutex
+
 func (a *AStar) pathTo(to *Point) []*Point {
-	path := []*Point{}
+	pathToCacheLock.Lock()
+	path := a.pathToCache[*to]
+	pathToCacheLock.Unlock()
+
+	if len(path) > 0 {
+		return path
+	}
 
 	curr := to
 	for !curr.Equals(*a.start) {
@@ -84,6 +93,10 @@ func (a *AStar) pathTo(to *Point) []*Point {
 			path[i], path[opp] = path[opp], path[i]
 		}
 	}
+
+	pathToCacheLock.Lock()
+	a.pathToCache[*to] = path
+	pathToCacheLock.Unlock()
 
 	return path
 }

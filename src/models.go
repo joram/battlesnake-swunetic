@@ -1,7 +1,6 @@
 package main
 
 import (
-	"sync"
 	"time"
 )
 
@@ -115,13 +114,12 @@ type PathCalculation struct {
 }
 
 type AStar struct {
-	gameState       *GameState
-	start           *Point
-	turnsTo         map[Point]int
-	visited         map[Point]bool
-	pathToCache     map[Point][]*Point
-	pathToCacheLock sync.Mutex
-	canVisitCount   int
+	gameState     *GameState
+	start         *Point
+	turnsTo       map[Point]int
+	visited       map[Point]bool
+	pathToCache   map[Point][]*Point
+	canVisitCount int
 }
 
 type AStarPoint struct {

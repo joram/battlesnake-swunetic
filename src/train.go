@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"time"
-	_ "time"
 )
 
 func Train() {
@@ -47,10 +46,11 @@ func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount
 		}
 		averageTurns = averageTurns / len(games)
 
-		winPercent := WinPercent(games, heuristicSnakeId)
-		LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), winPercent, averageTurns)
-		fmt.Printf("\n\t%.2f%% wins\n", winPercent)
 	}
+	winPercent := WinPercent(games, heuristicSnakeId)
+	LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), winPercent, averageTurns)
+	fmt.Printf("\n\t%.2f%% wins\n", winPercent)
+
 	fmt.Printf("sample#quality=%v\n", heuristicQuality)
 	return heuristicQuality
 }
