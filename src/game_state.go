@@ -274,7 +274,7 @@ func (gameState *GameState) IsPossiblySolid(point *Point, ignoreSnakeHead string
 	for _, snake := range gameState.OtherSnakes() {
 		for _, neighbour := range snake.Head().Neighbours() {
 			if neighbour.Equals(*point) {
-				if snake.Length() > gameState.MySnake().Length() {
+				if snake.Length() >= gameState.MySnake().Length() {
 					return true
 				}
 			}
