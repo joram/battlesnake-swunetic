@@ -12,10 +12,12 @@ type GameStartRequest struct {
 }
 
 type GameStartResponse struct {
-	Color   string  `json:"color"`
-	HeadUrl *string `json:"head_url,omitempty"`
-	Name    string  `json:"name"`
-	Taunt   *string `json:"taunt,omitempty"`
+	Color    string  `json:"color"`
+	HeadUrl  *string `json:"head_url,omitempty"`
+	Name     string  `json:"name"`
+	HeadType string  `json:"head_type"`
+	TailType string  `json:"tail_type"`
+	Taunt    *string `json:"taunt,omitempty"`
 }
 
 type MoveRequest struct {

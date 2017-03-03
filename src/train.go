@@ -2,9 +2,26 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"time"
 	_ "time"
 )
+
+func Train() {
+	log.Println("Simulate a game to train swunetics!")
+	numWorkers := 100
+	numGames := 200
+	numFood := 6
+	mutation := 10
+	bestQuality := TrainAgainstSnek(numGames, 0, numFood, numWorkers, 0)
+	fmt.Printf("\nstarting quality: %v\n", bestQuality)
+	for {
+		quality := TrainAgainstSnek(numGames, mutation, numFood, numWorkers, bestQuality)
+		if quality > bestQuality {
+			bestQuality = quality
+		}
+	}
+}
 
 func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount int, bestQualitySoFar float64) float64 {
 	start := time.Now()

@@ -49,19 +49,7 @@ func main() {
 	}()
 
 	if *simulate {
-		log.Println("Simulate a game to train swunetics!")
-		numWorkers := 100
-		numGames := 200
-		numFood := 6
-		mutation := 2
-		bestQuality := TrainAgainstSnek(numGames, 0, numFood, numWorkers, 0)
-		fmt.Printf("\nstarting quality: %v\n", bestQuality)
-		for {
-			quality := TrainAgainstSnek(numGames, mutation, numFood, numWorkers, bestQuality)
-			if quality > bestQuality {
-				bestQuality = quality
-			}
-		}
+		Train()
 	} else {
 		for {
 			time.Sleep(time.Hour)
