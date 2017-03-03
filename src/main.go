@@ -6,7 +6,9 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
+	"time"
 )
 
 var redisConnectionPool *redis.Pool
@@ -33,17 +35,20 @@ func main() {
 		fmt.Printf("Wrote: %v", weights)
 		return
 	}
-	if !*simulate {
-		http.HandleFunc("/start", start)
-		http.HandleFunc("/move", move)
-		port := os.Getenv("PORT")
-		if port == "" {
-			port = "9000"
-		}
-		PrimeWeightsCache()
-		log.Printf("Running server on port %s...\n", port)
+
+	http.HandleFunc("/start", start)
+	http.HandleFunc("/move", move)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9000"
+	}
+	PrimeWeightsCache()
+	log.Printf("Running server on port %s...\n", port)
+	go func() {
 		http.ListenAndServe(":"+port, nil)
-	} else {
+	}()
+
+	if *simulate {
 		log.Println("Simulate a game to train swunetics!")
 		numWorkers := 10
 		numGames := 200
@@ -56,6 +61,10 @@ func main() {
 			if quality > bestQuality {
 				bestQuality = quality
 			}
+		}
+	} else {
+		for {
+			time.Sleep(time.Hour)
 		}
 	}
 }

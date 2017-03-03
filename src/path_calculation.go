@@ -4,7 +4,7 @@ import (
 	"math/rand"
 )
 
-func NewAStar(gameState *GameState, start *Point) *AStar {
+func NewAStar(gameState *GameState, start *Point) AStar {
 	aStar := AStar{
 		gameState:     gameState,
 		start:         start,
@@ -13,7 +13,7 @@ func NewAStar(gameState *GameState, start *Point) *AStar {
 		canVisitCount: 0,
 	}
 	aStar.process()
-	return &aStar
+	return aStar
 }
 
 func (a *AStar) shouldVisit(p *Point) bool {
@@ -29,19 +29,18 @@ func (a *AStar) shouldVisit(p *Point) bool {
 
 func (a *AStar) process() {
 	initial := AStarPoint{a.start, 0}
-	var toVisit = []*AStarPoint{&initial}
+	var toVisit = []AStarPoint{initial}
 	a.turnsTo[*a.start] = 0
 	for len(toVisit) > 0 {
 		p := toVisit[0]
 		toVisit = toVisit[1:]
 		a.canVisitCount += 1
-
 		//println("visiting ", p.point.String())
 		for _, neightbour := range p.point.Neighbours() {
 			if a.shouldVisit(neightbour) {
 				a.turnsTo[*neightbour] = p.turnsTo + 1
 				next := AStarPoint{neightbour, p.turnsTo + 1}
-				toVisit = append(toVisit, &next)
+				toVisit = append(toVisit, next)
 			}
 		}
 	}
@@ -67,13 +66,7 @@ func (a *AStar) previousStep(to *Point) *Point {
 }
 
 func (a *AStar) pathTo(to *Point) []*Point {
-	a.pathToCacheLock.Lock()
-	path := a.pathToCache[*to]
-	a.pathToCacheLock.Unlock()
-
-	if len(path) > 0 {
-		return path
-	}
+	path := []*Point{}
 
 	curr := to
 	for !curr.Equals(*a.start) {
@@ -92,8 +85,5 @@ func (a *AStar) pathTo(to *Point) []*Point {
 		}
 	}
 
-	a.pathToCacheLock.Lock()
-	a.pathToCache[*to] = path
-	a.pathToCacheLock.Unlock()
 	return path
 }

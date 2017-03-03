@@ -60,7 +60,7 @@ type GameState struct {
 	Food       []Point
 	state      string
 	You        string
-	aStar      map[string]*AStar
+	aStar      map[string]AStar
 	DiedOnTurn map[string]int
 }
 

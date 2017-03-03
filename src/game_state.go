@@ -43,7 +43,10 @@ func NewGameState(mr MoveRequest) GameState {
 		DiedOnTurn: map[string]int{},
 	}
 
-	gameState.generateAStar()
+	gameState.aStar = map[string]AStar{}
+	for _, snake := range gameState.Snakes {
+		gameState.aStar[snake.Id] = NewAStar(&gameState, snake.Head())
+	}
 	return gameState
 }
 
@@ -71,18 +74,10 @@ func CloneGameState(gs *GameState) GameState {
 		gs.Food,
 		gs.state,
 		gs.You,
-		map[string]*AStar{},
+		map[string]AStar{},
 		gs.DiedOnTurn,
 	}
 
-}
-
-func (gameState *GameState) generateAStar() {
-	gameState.aStar = map[string]*AStar{}
-
-	for _, snake := range gameState.Snakes {
-		gameState.aStar[snake.Id] = NewAStar(gameState, snake.Head())
-	}
 }
 
 func (gameState *GameState) MySnake() *Snake {
@@ -175,7 +170,11 @@ func (gameState *GameState) NextGameState() *GameState {
 	}
 
 	nextGameState.CheckWinStates()
-	nextGameState.generateAStar()
+
+	nextGameState.aStar = map[string]AStar{}
+	for _, snake := range nextGameState.Snakes {
+		nextGameState.aStar[snake.Id] = NewAStar(&nextGameState, snake.Head())
+	}
 
 	return &nextGameState
 }
