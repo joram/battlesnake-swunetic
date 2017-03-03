@@ -54,10 +54,10 @@ func WinPercent(games []Game, snakeId string) float64 {
 func SnakeQualities(games []Game) map[string]float64 {
 
 	snakeWins := make(map[string]float64)
-	for _, snake := range games[0].currentGameState.Snakes {
-		snakeWins[snake.Id] = WinPercent(games, snake.Id)
+	for _, snake := range games[0].currentGameState.SnakeAIs {
+		snakeWins[snake.GetId()] = WinPercent(games, snake.GetId())
 	}
-
+	fmt.Printf("%v\n", snakeWins)
 	return snakeWins
 }
 
