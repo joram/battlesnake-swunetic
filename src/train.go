@@ -32,10 +32,9 @@ func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount
 
 		winPercent := WinPercent(games, heuristicSnakeId)
 		LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), winPercent, averageTurns)
-		fmt.Printf("\n\t%.2f%% wins ", winPercent)
-	} else {
-		print(".")
+		fmt.Printf("\n\t%.2f%% wins\n", winPercent)
 	}
+	fmt.Printf("sample#quality=%v\n", heuristicQuality)
 	return heuristicQuality
 }
 
