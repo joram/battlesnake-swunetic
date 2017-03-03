@@ -50,7 +50,7 @@ func main() {
 
 	if *simulate {
 		log.Println("Simulate a game to train swunetics!")
-		numWorkers := 10
+		numWorkers := 100
 		numGames := 200
 		numFood := 6
 		mutation := 2
