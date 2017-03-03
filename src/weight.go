@@ -30,7 +30,7 @@ func LogBestWeights(bestWeights map[string]int, numGames int, duration time.Dura
 	println(s)
 }
 
-func SnakeQualities(games []*Game) map[string]float64 {
+func SnakeQualities(games []Game) map[string]float64 {
 	snakeWins := make(map[string]float64)
 	for _, snake := range games[0].currentGameState.Snakes {
 		snakeWins[snake.Id] = 0

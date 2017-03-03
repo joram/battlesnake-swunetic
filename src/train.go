@@ -38,7 +38,7 @@ func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount
 	return heuristicQuality
 }
 
-func WinPercent(games []*Game, snakeId string) float64 {
+func WinPercent(games []Game, snakeId string) float64 {
 	count := float64(0)
 	for _, game := range games {
 		for _, winner := range game.currentGameState.winners {
@@ -51,14 +51,14 @@ func WinPercent(games []*Game, snakeId string) float64 {
 	return count * float64(100) / float64(len(games))
 }
 
-func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, amountOfFood, workerCount int) []*Game {
+func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, amountOfFood, workerCount int) []Game {
 	doneGamesChan := make(chan *Game)
 	gamesChan := make(chan *Game)
 
-	games := []*Game{}
+	games := []Game{}
 	go func() {
 		for game := range doneGamesChan {
-			games = append(games, game)
+			games = append(games, *game)
 			if len(games) >= numGamesPerGeneration {
 				close(gamesChan)
 				close(doneGamesChan)
