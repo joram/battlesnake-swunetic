@@ -1,2 +1,2 @@
 web: battlesnake-swunetic
-train: train
+train: battlesnake-swunetic --sim
