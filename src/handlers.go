@@ -14,8 +14,8 @@ func start(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Game starting - %v\n", requestData.GameId)
 	responseData := GameStartResponse{
 		Color:   "#F7931D",
-		Name:    "snek-W",
-		HeadUrl: stringPtr("https://s3.amazonaws.com/john-box-o-mysteries/swu-logo.png"),
+		Name:    "clyde snek",
+		HeadUrl: stringPtr("https://s3.amazonaws.com/john-box-o-mysteries/pacman+ghosts/clyde.png"),
 	}
 	b, err := json.Marshal(responseData)
 	if err != nil {
