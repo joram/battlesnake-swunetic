@@ -1,2 +1,2 @@
- scripts/build
- bin/battlesnake-swunetic -sim
+../scripts/build
+battlesnake-swunetic -sim
