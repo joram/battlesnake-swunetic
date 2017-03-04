@@ -9,9 +9,9 @@ import (
 )
 
 var heuristics = map[string]MoveHeuristic{
-	"nearest-food":       NearestFoodHeuristic,
-	"straight":           GoStraightHeuristic,
-	"random":             RandomHeuristic,
+	"nearest-food": NearestFoodHeuristic,
+	//"straight":           GoStraightHeuristic,
+	//"random":             RandomHeuristic,
 	"control":            BoardControlHeuristic,
 	"agressive":          CollisionHeuristic,
 	"agressive-straight": StraightLineAgressionHeuristic,
