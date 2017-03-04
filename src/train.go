@@ -39,14 +39,14 @@ func TrainAgainstSnek(numGamesPerGeneration, mutation, amountOfFood, workerCount
 	if heuristicQuality > bestQualitySoFar {
 		bestWeights = snake.GetWeights()
 		StoreWeights(bestWeights)
-
-		averageTurns = 0
-		for _, game := range games {
-			averageTurns += game.currentGameState.Turn
-		}
-		averageTurns = averageTurns / len(games)
-
 	}
+	
+	averageTurns = 0
+	for _, game := range games {
+		averageTurns += game.currentGameState.Turn
+	}
+	averageTurns = averageTurns / len(games)
+
 	winPercent := WinPercent(games, heuristicSnakeId)
 	LogBestWeights(bestWeights, numGamesPerGeneration, time.Since(start), winPercent, averageTurns)
 	fmt.Printf("\n\t%.2f%% wins\n", winPercent)
