@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 	"sync"
+	"time"
 )
 
 var heuristics = map[string]MoveHeuristic{
@@ -20,9 +21,10 @@ var heuristics = map[string]MoveHeuristic{
 }
 
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
+	start := time.Now()
 	h.WeightedDirections = h.MoveFunc(gameState)
-	if false {
-		fmt.Printf("%v:\t%v\n", h.Name, h.WeightedDirections)
+	if time.Since(start) > time.Duration(time.Millisecond*50) {
+		fmt.Printf("%v:\t%v %v\n", h.Name, h.WeightedDirections, time.Since(start))
 	}
 }
 
