@@ -50,7 +50,7 @@ func main() {
 		http.ListenAndServe(":"+port, nil)
 	}()
 
-	if *simulate {
+	if simulate {
 		Train()
 	} else {
 		for {
