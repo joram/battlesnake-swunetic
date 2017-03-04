@@ -12,6 +12,7 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 
 	head := mySnake.Coords[0]
 	wg := sync.WaitGroup{}
+	lock := sync.Mutex{}
 	control := map[string]float64{
 		UP:    0,
 		DOWN:  0,
@@ -22,7 +23,10 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 		wg.Add(1)
 		go func() {
 			newHead := head.Add(directionVector(dir))
-			control[dir] = BoardControl(gameState, &newHead)
+			c := BoardControl(gameState, &newHead)
+			lock.Lock()
+			control[dir] = c
+			lock.Unlock()
 			wg.Done()
 		}()
 	}

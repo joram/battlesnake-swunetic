@@ -8,7 +8,7 @@ import (
 
 func Train() {
 	log.Println("Simulate a game to train swunetics!")
-	numWorkers := 100
+	numWorkers := 2
 	numGames := 200
 	numFood := 6
 	mutation := 10
