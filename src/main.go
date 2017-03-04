@@ -12,12 +12,11 @@ import (
 )
 
 var redisConnectionPool *redis.Pool
-var simulate bool
+var simulate *bool
 
 func main() {
 
-	simulateFlag := flag.Bool("sim", false, "simulate instead of starting a web snake")
-	simulate = *simulateFlag
+	simulate = flag.Bool("sim", false, "simulate instead of starting a web snake")
 	setWeightsFlag := flag.Bool("set", false, "set weights for snake")
 	flag.Parse()
 	redisConnectionPool = NewPool()
@@ -50,7 +49,7 @@ func main() {
 		http.ListenAndServe(":"+port, nil)
 	}()
 
-	if simulate {
+	if *simulate {
 		Train()
 	} else {
 		for {
