@@ -105,7 +105,7 @@ func RunGames(snakeAIs []SnakeAI, snakeNames []string, numGamesPerGeneration, am
 
 	// add games
 	for i := 0; i < numGamesPerGeneration; i++ {
-		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, amountOfFood)
+		game := NewGame(fmt.Sprintf("Game-%v", i), snakeNames, amountOfFood, 15, 15)
 		game.currentGameState.SnakeAIs = snakeAIs
 		gamesChan <- game
 	}

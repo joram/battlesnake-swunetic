@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func NewGame(name string, snakeNames []string, amountOfFood int) *Game {
+func NewGame(name string, snakeNames []string, amountOfFood, width, height int) *Game {
 	initialMoveRequest := MoveRequest{
 		Food:   [][]int{},
 		GameId: "the one and only game atm",
-		Height: 20,
-		Width:  20,
+		Height: height,
+		Width:  width,
 		Turn:   0,
 		Snakes: []MoveRequestSnake{},
 		You:    "",
