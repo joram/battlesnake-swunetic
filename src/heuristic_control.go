@@ -21,14 +21,14 @@ func BoardControlHeuristic(gameState *GameState) WeightedDirections {
 	}
 	for dir, _ := range control {
 		wg.Add(1)
-		go func() {
+		go func(dir string) {
 			newHead := head.Add(directionVector(dir))
 			c := BoardControl(gameState, &newHead)
 			lock.Lock()
 			control[dir] = c
 			lock.Unlock()
 			wg.Done()
-		}()
+		}(dir)
 	}
 	wg.Wait()
 
