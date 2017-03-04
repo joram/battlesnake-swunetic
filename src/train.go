@@ -11,7 +11,7 @@ func Train() {
 	numWorkers := 2
 	numGames := 200
 	numFood := 6
-	mutation := 10
+	mutation := 2
 	bestQuality := TrainAgainstSnek(numGames, 0, numFood, numWorkers, 0)
 	fmt.Printf("\nstarting quality: %v\n", bestQuality)
 	for {
