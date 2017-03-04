@@ -16,7 +16,8 @@ var simulate bool
 
 func main() {
 
-	simulate = flag.Bool("sim", false, "simulate instead of starting a web snake")
+	simulateFlag := flag.Bool("sim", false, "simulate instead of starting a web snake")
+	simulate = *simulateFlag
 	setWeightsFlag := flag.Bool("set", false, "set weights for snake")
 	flag.Parse()
 	redisConnectionPool = NewPool()
