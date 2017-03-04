@@ -23,7 +23,7 @@ var heuristics = map[string]MoveHeuristic{
 func (h *WeightedHeuristic) Calculate(gameState *GameState) {
 	start := time.Now()
 	h.WeightedDirections = h.MoveFunc(gameState)
-	if time.Since(start) > time.Duration(time.Millisecond*50) {
+	if time.Since(start) > time.Duration(time.Millisecond*50) && !*simulate {
 		fmt.Printf("%v:\t%v s slow, took: %v\n", h.Name, h.WeightedDirections, time.Since(start))
 	}
 }
