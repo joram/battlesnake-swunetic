@@ -10,6 +10,7 @@ run `swu run` to build and run the snake server at http://localhost:9000
 
 # Overview
 
+
 ## Comparing Snakes
 This will, given a list of heuristics, run games with snakes of various weights against each other, and find a winner. For a list of snake configurations (weights for the heuristics), it will run 100 games, and return the count of wins for each of the configurations.
 
